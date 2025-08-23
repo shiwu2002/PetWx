@@ -1,186 +1,385 @@
-/* pages/PetDetails/PetDetails.wxss */
+/* 宠物详情页面样式 */
+page {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
 
-/* 容器背景 */
 .container {
   min-height: 100vh;
-  background: #f7fafc;
-  padding: 32rpx 0 120rpx 0;
+  background: transparent;
+  padding: 0 0 120rpx 0;
 }
 
-/* 宠物卡片 */
-.pet-card {
-  background: #fff;
-  border-radius: 20rpx;
-  box-shadow: 0 6rpx 24rpx rgba(72,187,120,0.08);
-  padding: 36rpx 32rpx 32rpx 32rpx;
-  margin: 0 32rpx 32rpx 32rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* 宠物图片轮播区域 */
+.pet-image-section {
+  position: relative;
+  height: 500rpx;
+  overflow: hidden;
 }
-.pet-avatar {
-  width: 180rpx;
-  height: 180rpx;
-  border-radius: 16rpx;
-  object-fit: cover;
-  margin-bottom: 24rpx;
-  background: #f2f2f2;
-}
-.pet-info {
+
+.image-swiper {
   width: 100%;
+  height: 100%;
 }
-.pet-title-row {
+
+.pet-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, transparent 50%, rgba(0, 0, 0, 0.1) 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 60rpx 32rpx 0;
+}
+
+.back-btn, .share-btn {
+  width: 80rpx;
+  height: 80rpx;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10rpx);
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10rpx;
+  justify-content: center;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
+
+.back-btn:active, .share-btn:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 1);
+}
+
+.back-icon {
+  font-size: 48rpx;
+  color: #2d3748;
+  font-weight: 300;
+}
+
+.share-icon {
+  font-size: 32rpx;
+  color: #2d3748;
+}
+
+/* 宠物信息卡片 */
+.pet-info-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10rpx);
+  border-radius: 24rpx;
+  margin: -40rpx 32rpx 32rpx;
+  padding: 40rpx 32rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.pet-header {
+  margin-bottom: 32rpx;
+}
+
+.pet-title-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24rpx;
+}
+
 .pet-name {
-  font-size: 36rpx;
-  font-weight: 700;
-  color: #222;
+  font-size: 40rpx;
+  font-weight: 800;
+  color: #2d3748;
   flex: 1;
+  margin-right: 20rpx;
+}
+
+.pet-badges {
+  display: flex;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+
+.status-badge, .health-badge {
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.status-badge.adoptable {
+  background: rgba(72, 187, 120, 0.15);
+  color: #38a169;
+}
+
+.status-badge.adopted {
+  background: rgba(229, 62, 62, 0.15);
+  color: #e53e3e;
+}
+
+.health-badge.healthy {
+  background: rgba(72, 187, 120, 0.15);
+  color: #38a169;
+}
+
+.health-badge.sick {
+  background: rgba(229, 62, 62, 0.15);
+  color: #e53e3e;
+}
+
+.badge-text {
+  font-weight: 600;
+}
+
+.pet-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24rpx;
+  margin-bottom: 32rpx;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 20rpx;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 16rpx;
+  border: 1rpx solid rgba(102, 126, 234, 0.1);
+}
+
+.meta-icon {
+  font-size: 32rpx;
+  width: 48rpx;
+  text-align: center;
+}
+
+.meta-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.meta-label {
+  display: block;
+  font-size: 22rpx;
+  color: #718096;
+  font-weight: 500;
+  margin-bottom: 4rpx;
+}
+
+.meta-value {
+  display: block;
+  font-size: 26rpx;
+  color: #2d3748;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.pet-status {
-  font-size: 22rpx;
-  padding: 2rpx 12rpx;
-  border-radius: 9999rpx;
-  font-weight: 500;
-  margin-left: 16rpx;
-}
-.pet-status.adoptable {
-  background: rgba(72,187,120,0.12);
-  color: #38a169;
-}
-.pet-status.adopted {
-  background: rgba(229,62,62,0.10);
-  color: #e53e3e;
-}
-.pet-meta {
-  display: flex;
-  gap: 18rpx;
-  font-size: 24rpx;
-  color: #666;
-  margin-bottom: 8rpx;
-}
-.pet-health {
-  display: flex;
-  gap: 16rpx;
-  font-size: 24rpx;
-  margin-bottom: 8rpx;
-}
-.health-healthy {
-  color: #38a169;
-  background: rgba(72,187,120,0.10);
-  padding: 2rpx 8rpx;
-  border-radius: 6rpx;
-}
-.health-sick {
-  color: #e53e3e;
-  background: rgba(229,62,62,0.10);
-  padding: 2rpx 8rpx;
-  border-radius: 6rpx;
-}
-.pet-location {
-  color: #888;
-}
-.pet-desc {
-  font-size: 26rpx;
-  color: #888;
-  margin-top: 10rpx;
-  line-height: 1.7;
+
+.pet-description {
+  padding-top: 24rpx;
+  border-top: 1rpx solid rgba(102, 126, 234, 0.1);
 }
 
-/* 操作按钮区 */
-.action-row {
+.description-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 16rpx;
+}
+
+.description-text {
+  font-size: 26rpx;
+  color: #718096;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+/* 疫苗信息卡片 */
+.vaccine-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10rpx);
+  border-radius: 24rpx;
+  margin: 0 32rpx 32rpx;
+  padding: 32rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
   display: flex;
-  justify-content: center;
-  gap: 32rpx;
+  align-items: center;
+  gap: 16rpx;
   margin-bottom: 24rpx;
 }
-.adopt-btn, .vaccine-btn {
-  flex: 1;
-  max-width: 260rpx;
-  height: 70rpx;
-  border-radius: 35rpx;
-  font-size: 28rpx;
-  font-weight: 600;
-  border: none;
-  color: #fff;
-  box-shadow: 0 2rpx 8rpx rgba(72,187,120,0.10);
-}
-.adopt-btn {
-  background: linear-gradient(90deg, #48bb78 60%, #42b983 100%);
-}
-.vaccine-btn {
-  background: #38a169;
+
+.card-icon {
+  font-size: 40rpx;
+  width: 48rpx;
+  text-align: center;
 }
 
-/* 疫苗信息弹窗 */
-.vaccine-modal {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.25);
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.vaccine-card {
-  background: #fff;
-  border-radius: 18rpx;
-  box-shadow: 0 8rpx 32rpx rgba(72,187,120,0.12);
-  width: auto;
-  max-width: 600rpx;
-  margin: 0 32rpx 32rpx 32rpx;
-  padding: 36rpx 28rpx 28rpx 28rpx;
-  position: relative;
-}
-.vaccine-header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 18rpx;
-}
-.vaccine-title {
+.card-title {
   font-size: 32rpx;
   font-weight: 700;
-  color: #222;
+  color: #2d3748;
 }
-.close-btn {
-  font-size: 40rpx;
-  color: #aaa;
-  font-weight: 700;
-  cursor: pointer;
+
+.vaccine-content {
+  margin-bottom: 24rpx;
 }
-.vaccine-loading, .vaccine-error, .vaccine-empty {
-  text-align: center;
-  color: #888;
-  font-size: 26rpx;
-  margin: 30rpx 0;
+
+.info-grid {
+  display: grid;
+  gap: 20rpx;
 }
-.vaccine-item {
-  margin-bottom: 18rpx;
-  padding-bottom: 12rpx;
-  border-bottom: 1rpx solid #f1f1f1;
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid rgba(102, 126, 234, 0.1);
 }
-.vaccine-item:last-child {
+
+.info-item:last-child {
   border-bottom: none;
-  margin-bottom: 0;
 }
-.vaccine-name {
-  font-size: 28rpx;
-  color: #222;
+
+.info-label {
+  font-size: 26rpx;
+  color: #718096;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 26rpx;
+  color: #2d3748;
   font-weight: 600;
+  text-align: right;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.vaccine-date, .vaccine-status {
-  font-size: 24rpx;
-  color: #666;
-  margin-top: 4rpx;
+
+.info-value.success {
+  color: #38a169;
+}
+
+.info-value.warning {
+  color: #d69e2e;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 60rpx 40rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+  opacity: 0.6;
+}
+
+.empty-text {
   display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 12rpx;
+}
+
+.empty-desc {
+  display: block;
+  font-size: 24rpx;
+  color: #718096;
+  line-height: 1.4;
+}
+
+/* 加载状态 */
+.loading-state {
+  text-align: center;
+  padding: 60rpx 40rpx;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10rpx);
+  border-radius: 24rpx;
+  margin: 0 32rpx 32rpx;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid rgba(102, 126, 234, 0.2);
+  border-radius: 50%;
+  border-top-color: #667eea;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20rpx;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 26rpx;
+  color: #718096;
+  font-weight: 500;
+}
+
+/* 错误状态 */
+.error-state {
+  text-align: center;
+  padding: 60rpx 40rpx;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10rpx);
+  border-radius: 24rpx;
+  margin: 0 32rpx 32rpx;
+}
+
+.error-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+  opacity: 0.7;
+}
+
+.error-text {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #e53e3e;
+  margin-bottom: 24rpx;
+}
+
+.retry-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 16rpx;
+  padding: 20rpx 40rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.retry-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.3);
+}
+
+.btn-text {
+  color: #ffffff;
+  font-weight: 600;
 }
 
 /* 领养按钮吸底 */
@@ -189,21 +388,43 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255,255,255,0.95);
-  box-shadow: 0 -2rpx 12rpx rgba(72,187,120,0.08);
-  padding: 18rpx 32rpx 32rpx 32rpx;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10rpx);
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.1);
+  padding: 24rpx 32rpx 32rpx;
   z-index: 100;
 }
+
 .adopt-btn {
   width: 100%;
-  height: 76rpx;
-  border-radius: 38rpx;
-  font-size: 32rpx;
-  font-weight: 700;
-  background: linear-gradient(90deg, #48bb78 60%, #42b983 100%);
-  color: #fff;
+  height: 88rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
   border: none;
-  box-shadow: 0 4rpx 16rpx rgba(72,187,120,0.10);
+  border-radius: 20rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  box-shadow: 0 6rpx 20rpx rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+}
+
+.adopt-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 3rpx 10rpx rgba(102, 126, 234, 0.3);
+}
+
+.adopt-btn:disabled {
+  background: #e2e8f0;
+  color: #a0aec0;
+  box-shadow: none;
+}
+
+.btn-icon {
+  font-size: 28rpx;
 }
 
 /* 领养申请表单弹窗 */
@@ -222,35 +443,46 @@
 }
 
 .adopt-form {
-  background: #fff;
-  border-radius: 20rpx;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20rpx);
+  border-radius: 24rpx;
   width: 100%;
   max-width: 600rpx;
   max-height: 80vh;
   overflow: hidden;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.2);
 }
 
 .form-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 32rpx 32rpx 24rpx 32rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  padding: 32rpx 32rpx 24rpx;
+  border-bottom: 1rpx solid rgba(102, 126, 234, 0.1);
 }
 
 .form-title {
   font-size: 32rpx;
   font-weight: 700;
-  color: #222;
+  color: #2d3748;
 }
 
 .form-close {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 40rpx;
-  color: #999;
-  font-weight: 300;
-  line-height: 1;
-  padding: 8rpx;
+  color: #a0aec0;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.form-close:active {
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 .form-content {
@@ -267,62 +499,145 @@
   display: block;
   font-size: 28rpx;
   font-weight: 600;
-  color: #333;
+  color: #2d3748;
   margin-bottom: 16rpx;
+}
+
+.required {
+  color: #e53e3e;
+  margin-left: 4rpx;
 }
 
 .form-input {
   width: 100%;
   min-height: 120rpx;
   padding: 20rpx;
-  border: 2rpx solid #e5e5e5;
-  border-radius: 12rpx;
+  border: 2rpx solid #e2e8f0;
+  border-radius: 16rpx;
   font-size: 28rpx;
-  color: #333;
-  background: #fafafa;
+  color: #2d3748;
+  background: #f8f9fa;
   box-sizing: border-box;
   resize: none;
+  transition: all 0.3s ease;
 }
 
 .form-input:focus {
-  border-color: #48bb78;
-  background: #fff;
+  border-color: #667eea;
+  background: #ffffff;
+  box-shadow: 0 0 0 3rpx rgba(102, 126, 234, 0.1);
+}
+
+.form-input::placeholder {
+  color: #a0aec0;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 22rpx;
+  color: #a0aec0;
+  margin-top: 8rpx;
 }
 
 .form-error {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  background: rgba(229, 62, 62, 0.1);
   color: #e53e3e;
   font-size: 24rpx;
+  padding: 16rpx 20rpx;
+  border-radius: 12rpx;
   margin-bottom: 24rpx;
-  padding: 12rpx 16rpx;
-  background: rgba(229, 62, 62, 0.1);
-  border-radius: 8rpx;
+}
+
+.error-icon {
+  font-size: 24rpx;
 }
 
 .form-buttons {
   display: flex;
-  gap: 24rpx;
+  gap: 20rpx;
   margin-top: 32rpx;
 }
 
-.form-submit-btn {
+.form-btn {
   flex: 1;
   height: 80rpx;
-  border-radius: 40rpx;
-  font-size: 30rpx;
-  font-weight: 600;
-  background: linear-gradient(90deg, #48bb78 60%, #42b983 100%);
-  color: #fff;
   border: none;
-  box-shadow: 0 4rpx 16rpx rgba(72, 187, 120, 0.2);
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
-.form-cancel-btn {
-  flex: 1;
-  height: 80rpx;
-  border-radius: 40rpx;
-  font-size: 30rpx;
-  font-weight: 600;
-  background: #f5f5f5;
-  color: #666;
-  border: 2rpx solid #e5e5e5;
+.form-btn.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.3);
+}
+
+.form-btn.primary:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.3);
+}
+
+.form-btn.cancel {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.form-btn.cancel:active {
+  background: #e2e8f0;
+}
+
+/* 响应式设计 */
+@media (max-width: 750rpx) {
+  .pet-image-section {
+    height: 400rpx;
+  }
+  
+  .image-overlay {
+    padding: 40rpx 24rpx 0;
+  }
+  
+  .back-btn, .share-btn {
+    width: 72rpx;
+    height: 72rpx;
+  }
+  
+  .pet-info-card {
+    margin: -30rpx 24rpx 24rpx;
+    padding: 32rpx 24rpx;
+  }
+  
+  .pet-name {
+    font-size: 36rpx;
+  }
+  
+  .pet-meta-grid {
+    gap: 20rpx;
+  }
+  
+  .meta-item {
+    padding: 16rpx;
+  }
+  
+  .vaccine-card {
+    margin: 0 24rpx 24rpx;
+    padding: 24rpx;
+  }
+  
+  .adopt-form-mask {
+    padding: 24rpx;
+  }
+  
+  .adopt-form {
+    max-height: 85vh;
+  }
+  
+  .form-content {
+    padding: 24rpx;
+  }
 }

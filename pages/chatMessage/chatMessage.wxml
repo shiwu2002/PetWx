@@ -1,24 +1,104 @@
 <view class="chat-container">
+  <!-- 聊天头部 -->
+  <view class="chat-header">
+    <view class="header-content">
+      <view class="chat-info">
+        <image class="chat-avatar" src="{{targetAvatar || '/components/IMAGES/1293.jpg_wh860.jpg'}}" mode="aspectFill"/>
+        <view class="chat-details">
+          <text class="chat-name">{{targetName || '聊天对象'}}</text>
+          <text class="chat-status">{{isOnline ? '在线' : '离线'}}</text>
+        </view>
+      </view>
+      <view class="header-actions">
+        <view class="action-btn" bindtap="showChatOptions">
+          <text class="action-icon">⋯</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 消息列表 -->
   <scroll-view scroll-y="true" class="msg-list" scroll-with-animation scroll-into-view="{{toView}}">
+    <view class="chat-date-divider" wx:if="{{showDateDivider}}">
+      <text class="date-text">{{todayDate}}</text>
+    </view>
+    
     <block wx:for="{{messages}}" wx:key="timestamp">
-      <view class="msg-row {{item.sender == userId ? 'me' : 'other'}}">
+      <view class="msg-row {{item.sender == userId ? 'me' : 'other'}}" id="msg-{{item.timestamp}}">
         <view class="msg-bubble-wrap {{item.sender == userId ? 'me' : 'other'}}">
-          <image wx:if="{{item.sender != userId}}" class="avatar" src="{{item.senderAvatar || '/components/IMAGES/1293.jpg_wh860.jpg'}}"/>
-          <view class="msg-item {{item.sender == userId ? 'me' : 'other'}}" id="msg-{{item.timestamp}}">
+          <!-- 对方头像 -->
+          <image wx:if="{{item.sender != userId}}" class="avatar" src="{{item.senderAvatar || '/components/IMAGES/1293.jpg_wh860.jpg'}}" mode="aspectFill"/>
+          
+          <!-- 消息内容 -->
+          <view class="msg-item {{item.sender == userId ? 'me' : 'other'}}">
             <view class="msg-meta">
               <text class="msg-username">
-                {{item.senderName || (item.sender == userId ? '我' : '对方')}}<block wx:if="{{item.sender == targetId}}">（客服）</block>
+                {{item.senderName || (item.sender == userId ? '我' : '对方')}}
+                <text wx:if="{{item.sender == targetId}}" class="service-tag">（客服）</text>
               </text>
+              <text class="msg-time">{{item.timeStr || ''}}</text>
             </view>
-            <view class="msg-content">{{item.content}}</view>
+            <view class="msg-content">
+              <text class="msg-text">{{item.content}}</text>
+            </view>
+            <view class="msg-status" wx:if="{{item.sender == userId}}">
+              <text class="status-icon">{{item.status === 'sent' ? '✓' : (item.status === 'delivered' ? '✓✓' : '⏳')}}</text>
+            </view>
           </view>
-          <image wx:if="{{item.sender == userId}}" class="avatar" src="{{userInfo.avatarUrl || '/components/IMAGES/1293.jpg_wh860.jpg'}}"/>
+          
+          <!-- 我的头像 -->
+          <image wx:if="{{item.sender == userId}}" class="avatar" src="{{userInfo.avatarUrl || '/components/IMAGES/1293.jpg_wh860.jpg'}}" mode="aspectFill"/>
         </view>
       </view>
     </block>
+    
+    <!-- 空状态 -->
+    <view wx:if="{{messages.length === 0}}" class="empty-chat">
+      <view class="empty-icon">💬</view>
+      <text class="empty-text">开始聊天吧</text>
+      <text class="empty-desc">发送第一条消息开始对话</text>
+    </view>
   </scroll-view>
+
+  <!-- 输入栏 -->
   <view class="input-bar">
-    <input class="input" value="{{inputValue}}" bindinput="onInput" placeholder="请输入消息..." confirm-type="send" bindconfirm="sendMsg"/>
-    <button class="send-btn" bindtap="sendMsg">发送</button>
+    <view class="input-wrapper">
+      <input class="input" 
+             value="{{inputValue}}" 
+             bindinput="onInput" 
+             placeholder="请输入消息..." 
+             confirm-type="send" 
+             bindconfirm="sendMsg"
+             maxlength="500"/>
+      <view class="input-actions">
+        <view class="action-btn" bindtap="showEmoji">
+          <text class="action-icon">😊</text>
+        </view>
+        <view class="action-btn" bindtap="showMore">
+          <text class="action-icon">+</text>
+        </view>
+      </view>
+    </view>
+    <button class="send-btn {{inputValue ? 'active' : ''}}" bindtap="sendMsg" disabled="{{!inputValue}}">
+      <text class="btn-text">发送</text>
+    </button>
+  </view>
+
+  <!-- 聊天选项弹窗 -->
+  <view wx:if="{{showOptions}}" class="options-modal" bindtap="hideChatOptions">
+    <view class="options-content" catchtap="stopPropagation">
+      <view class="option-item" bindtap="clearChat">
+        <text class="option-icon">🗑️</text>
+        <text class="option-text">清空聊天记录</text>
+      </view>
+      <view class="option-item" bindtap="blockUser">
+        <text class="option-icon">🚫</text>
+        <text class="option-text">屏蔽用户</text>
+      </view>
+      <view class="option-item" bindtap="reportUser">
+        <text class="option-icon">⚠️</text>
+        <text class="option-text">举报用户</text>
+      </view>
+    </view>
   </view>
 </view> 

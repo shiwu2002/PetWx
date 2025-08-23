@@ -1,94 +1,199 @@
 <view class="main-container side-layout">
   <!-- 左侧导航栏 -->
   <view class="side-nav">
-    <block wx:for="{{sideNavList}}" wx:key="key">
-      <view class="side-nav-item" data-nav="{{item.key}}" bindtap="onSelectNav" wx:class="{active: selectedNav === item.key}">
-        {{item.label}}
-      </view>
-    </block>
+    <view class="nav-header">
+      <text class="nav-title">个人中心</text>
+      <text class="nav-subtitle">管理您的账户</text>
+    </view>
+    <view class="nav-list">
+      <block wx:for="{{sideNavList}}" wx:key="key">
+        <view class="side-nav-item" data-nav="{{item.key}}" bindtap="onSelectNav" wx:class="{active: selectedNav === item.key}">
+          <view class="nav-icon">{{item.icon || '📋'}}</view>
+          <text class="nav-label">{{item.label}}</text>
+        </view>
+      </block>
+    </view>
   </view>
 
   <!-- 右侧内容区 -->
   <view class="side-content">
     <!-- 个人信息内容 -->
     <block wx:if="{{selectedNav === 'profile'}}">
-      <view class="user-header">
-        <image class="avatar" src="{{userInfo.avatarUrl || '/components/IMAGES/Discover.png'}}" mode="aspectFill" bindtap="onChooseAvatar"/>
-        <view class="user-info">
-          <view class="nickname">{{userInfo.nickName || '未登录'}}</view>
-          <view class="phone">手机号：{{userInfo.phone || '未绑定'}}</view>
-          <button class="header-btn" bindtap="editProfile">补充信息</button>
+      <view class="content-header">
+        <text class="content-title">个人信息</text>
+        <text class="content-subtitle">完善您的个人资料</text>
+      </view>
+      
+      <view class="user-profile-card">
+        <view class="profile-header">
+          <view class="avatar-section">
+            <image class="avatar" src="{{userInfo.avatarUrl || '/components/IMAGES/Discover.png'}}" mode="aspectFill" bindtap="onChooseAvatar"/>
+            <view class="avatar-overlay">
+              <text class="avatar-text">点击更换</text>
+            </view>
+          </view>
+          <view class="user-info">
+            <text class="nickname">{{userInfo.nickName || '未登录'}}</text>
+            <text class="phone">{{userInfo.phone || '未绑定手机号'}}</text>
+            <button class="edit-profile-btn" bindtap="editProfile">
+              <text class="btn-text">编辑资料</text>
+            </button>
+          </view>
         </view>
-      </view>
-      <view class="profile-info-simple">
-        <view class="profile-row"><text class="profile-label">用户名：</text><text>{{userInfo.username || '无'}}</text></view>
-        <view class="profile-row"><text class="profile-label">余额：</text><text>{{userInfo.money !== '' ? userInfo.money : '无'}} 元</text></view>
-        <view class="profile-row"><text class="profile-label">信用分：</text><text>{{userInfo.credit_score !== '' ? userInfo.credit_score : '无'}}</text></view>
-      </view>
-      <view class="profile-service-btn-wrap">
-        <button class="profile-service-btn" bindtap="contactService">联系客服</button>
+        
+        <view class="profile-details">
+          <view class="detail-row">
+            <text class="detail-label">用户名</text>
+            <text class="detail-value">{{userInfo.username || '未设置'}}</text>
+          </view>
+          <view class="detail-row">
+            <text class="detail-label">账户余额</text>
+            <text class="detail-value balance">{{userInfo.money !== '' ? userInfo.money : '0'}} 元</text>
+          </view>
+          <view class="detail-row">
+            <text class="detail-label">信用评分</text>
+            <text class="detail-value credit">{{userInfo.credit_score !== '' ? userInfo.credit_score : '0'}}</text>
+          </view>
+        </view>
+        
+        <view class="profile-actions">
+          <button class="action-btn primary" bindtap="contactService">
+            <text class="btn-icon">💬</text>
+            <text class="btn-text">联系客服</text>
+          </button>
+        </view>
       </view>
     </block>
 
+    <!-- 我的申请内容 -->
     <block wx:if="{{selectedNav === 'myApply'}}">
-      <view wx:if="{{loading}}" class="loading">
-        <text>加载中...</text>
+      <view class="content-header">
+        <text class="content-title">我的申请</text>
+        <text class="content-subtitle">查看您的领养申请状态</text>
       </view>
-      <view wx:elif="{{error}}" class="error">
-        <text>{{error}}</text>
+      
+      <view wx:if="{{loading}}" class="loading-state">
+        <view class="loading-spinner"></view>
+        <text class="loading-text">加载中...</text>
       </view>
+      
+      <view wx:elif="{{error}}" class="error-state">
+        <view class="error-icon">⚠️</view>
+        <text class="error-text">{{error}}</text>
+        <button class="retry-btn" bindtap="loadApplyData">
+          <text class="btn-text">重试</text>
+        </button>
+      </view>
+      
       <block wx:elif="{{applyData && applyData.length}}">
-        <block wx:for="{{applyData}}" wx:key="id">
-          <view class="apply-card">
-            <image 
-              class="pet-image-full" 
-              src="{{applyDataPreviewUrls[index]}}" 
-              mode="aspectFill"
-            />
-            <view class="apply-header">
-              <view class="pet-nickname">{{item.petName}}</view>
-              <text class="apply-status" data-status="{{item.status}}">{{item.status}}</text>
-            </view>
-            <view class="main-row-flex">
-              <view class="pet-section-flex">
-                <view class="section-title">宠物信息</view>
-                <view class="info-row-flex"><text class="label">品种：</text><text>{{item.petBreed}}</text></view>
-                <view class="info-row-flex"><text class="label">年龄：</text><text>{{item.petAge}}</text></view>
-                <view class="info-row-flex"><text class="label">性别：</text><text>{{item.petGender}}</text></view>
-                <view class="info-row-flex"><text class="label">健康状况：</text><text>{{item.petHealthStatus}}</text></view>
+        <view class="apply-list">
+          <block wx:for="{{applyData}}" wx:key="id">
+            <view class="apply-card">
+              <view class="card-header">
+                <image class="pet-image" src="{{applyDataPreviewUrls[index]}}" mode="aspectFill"/>
+                <view class="pet-info">
+                  <text class="pet-name">{{item.petName}}</text>
+                  <view class="status-badge" data-status="{{item.status}}">
+                    <text class="status-text">{{item.status}}</text>
+                  </view>
+                </view>
               </view>
-              <view class="apply-section-flex">
-                <view class="section-title">申请信息</view>
-                <view class="info-row-flex"><text class="label">申请人：</text><text>{{item.userNickname}}</text></view>
-                <view class="info-row-flex"><text class="label">申请理由：</text><text>{{item.applyReason}}</text></view>
-                <view class="info-row-flex"><text class="label">养宠经验：</text><text>{{item.petExperience}}</text></view>
+              
+              <view class="card-content">
+                <view class="info-section">
+                  <text class="section-title">宠物信息</text>
+                  <view class="info-grid">
+                    <view class="info-item">
+                      <text class="info-label">品种</text>
+                      <text class="info-value">{{item.petBreed}}</text>
+                    </view>
+                    <view class="info-item">
+                      <text class="info-label">年龄</text>
+                      <text class="info-value">{{item.petAge}}</text>
+                    </view>
+                    <view class="info-item">
+                      <text class="info-label">性别</text>
+                      <text class="info-value">{{item.petGender}}</text>
+                    </view>
+                    <view class="info-item">
+                      <text class="info-label">健康状况</text>
+                      <text class="info-value">{{item.petHealthStatus}}</text>
+                    </view>
+                  </view>
+                </view>
+                
+                <view class="info-section">
+                  <text class="section-title">申请信息</text>
+                  <view class="info-grid">
+                    <view class="info-item">
+                      <text class="info-label">申请人</text>
+                      <text class="info-value">{{item.userNickname}}</text>
+                    </view>
+                    <view class="info-item full-width">
+                      <text class="info-label">申请理由</text>
+                      <text class="info-value">{{item.applyReason}}</text>
+                    </view>
+                    <view class="info-item full-width">
+                      <text class="info-label">养宠经验</text>
+                      <text class="info-value">{{item.petExperience}}</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
+              
+              <view class="card-actions">
+                <button class="view-task-btn" data-applyid="{{item.id}}" bindtap="onViewTask">
+                  <text class="btn-icon">📋</text>
+                  <text class="btn-text">查看家访任务</text>
+                </button>
               </view>
             </view>
-            <button class="view-task-btn" data-applyid="{{item.id}}" bindtap="onViewTask">
-              查看家访任务
-            </button>
-          </view>
-        </block>
+          </block>
+        </view>
       </block>
-      <view wx:else class="empty">
-        <text>暂无申请数据</text>
+      
+      <view wx:else class="empty-state">
+        <view class="empty-icon">📝</view>
+        <text class="empty-text">暂无申请数据</text>
+        <text class="empty-desc">您还没有提交过领养申请</text>
       </view>
     </block>
 
     <!-- 救助信息内容 -->
     <block wx:if="{{selectedNav === 'myDiscover'}}">
-      <view wx:if="{{myDiscoverData.length === 0}}" class="empty">
-        <text>暂无救助信息</text>
+      <view class="content-header">
+        <text class="content-title">我的救助</text>
+        <text class="content-subtitle">查看您发布的救助信息</text>
       </view>
+      
+      <view wx:if="{{myDiscoverData.length === 0}}" class="empty-state">
+        <view class="empty-icon">🐾</view>
+        <text class="empty-text">暂无救助信息</text>
+        <text class="empty-desc">您还没有发布过救助信息</text>
+      </view>
+      
       <block wx:for="{{myDiscoverData}}" wx:key="id">
         <view class="discover-card">
           <view class="discover-header">
-            <text class="discover-type">{{item.animalType}}</text>
-            <text class="discover-status">{{item.status}}</text>
+            <view class="discover-badges">
+              <view class="badge type-badge">
+                <text class="badge-text">{{item.animalType}}</text>
+              </view>
+              <view class="badge status-badge" data-status="{{item.status}}">
+                <text class="badge-text">{{item.status}}</text>
+              </view>
+            </view>
           </view>
-          <view class="discover-desc">{{item.description}}</view>
-          <view class="discover-location">发现地点：{{item.location}}</view>
-          <view class="discover-img-list">
+          
+          <view class="discover-content">
+            <text class="discover-desc">{{item.description}}</text>
+            <view class="discover-location">
+              <text class="location-icon">📍</text>
+              <text class="location-text">{{item.location}}</text>
+            </view>
+          </view>
+          
+          <view class="discover-images" wx:if="{{myDiscoverPreviewUrls[index] && myDiscoverPreviewUrls[index].length > 0}}">
             <block wx:for="{{myDiscoverPreviewUrls[index]}}" wx:key="img">
               <image class="discover-img" src="{{img}}" mode="aspectFill" />
             </block>
@@ -98,14 +203,28 @@
     </block>
 
     <!-- 补充信息弹窗 -->
-    <view wx:if="{{showEditModal}}" class="modal-mask">
-      <view class="modal">
-        <view class="modal-title">补充/编辑个人信息</view>
-        <input class="modal-input" placeholder="昵称" value="{{editNickName}}" bindinput="onEditNickName" />
-        <input class="modal-input" placeholder="手机号" value="{{editPhone}}" bindinput="onEditPhone" />
+    <view wx:if="{{showEditModal}}" class="modal-mask" bindtap="closeEditModal">
+      <view class="modal" catchtap="stopPropagation">
+        <view class="modal-header">
+          <text class="modal-title">编辑个人信息</text>
+          <view class="modal-close" bindtap="closeEditModal">×</view>
+        </view>
+        
+        <view class="modal-body">
+          <view class="input-group">
+            <text class="input-label">昵称</text>
+            <input class="modal-input" placeholder="请输入昵称" value="{{editNickName}}" bindinput="onEditNickName" />
+          </view>
+          
+          <view class="input-group">
+            <text class="input-label">手机号</text>
+            <input class="modal-input" placeholder="请输入手机号" value="{{editPhone}}" bindinput="onEditPhone" />
+          </view>
+        </view>
+        
         <view class="modal-actions">
-          <button class="modal-save" bindtap="saveProfile">保存</button>
-          <button class="modal-cancel" bindtap="closeEditModal">取消</button>
+          <button class="modal-btn cancel" bindtap="closeEditModal">取消</button>
+          <button class="modal-btn primary" bindtap="saveProfile">保存</button>
         </view>
       </view>
     </view>

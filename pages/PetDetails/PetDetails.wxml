@@ -1,94 +1,174 @@
 <!--pages/PetDetails/PetDetails.wxml-->
 <view class="container">
+  <!-- 宠物图片轮播 -->
+  <view class="pet-image-section" wx:if="{{pet}}">
+    <swiper class="image-swiper" indicator-dots="{{true}}" autoplay="{{true}}" interval="5000" duration="500">
+      <swiper-item wx:for="{{pet.images || [pet.processedImageUrl]}}" wx:key="*this">
+        <image class="pet-image" src="{{item || '/components/IMAGES/1293.jpg_wh860.jpg'}}" mode="aspectFill" />
+      </swiper-item>
+    </swiper>
+    <view class="image-overlay">
+      <view class="back-btn" bindtap="goBack">
+        <text class="back-icon">‹</text>
+      </view>
+      <view class="share-btn" bindtap="sharePet">
+        <text class="share-icon">📤</text>
+      </view>
+    </view>
+  </view>
+
   <!-- 宠物基本信息卡片 -->
-  <view class="pet-card" wx:if="{{pet}}">
-    <image class="pet-avatar" src="{{pet.processedImageUrl || '/components/IMAGES/1293.jpg_wh860.jpg'}}" mode="aspectFill" />
-    <view class="pet-info">
-      <view class="pet-title-row">
+  <view class="pet-info-card" wx:if="{{pet}}">
+    <view class="pet-header">
+      <view class="pet-title-section">
         <text class="pet-name">{{pet.name}}</text>
-        <text class="pet-status {{pet.isAdopt === '待领养' ? 'adoptable' : 'adopted'}}">{{pet.isAdopt}}</text>
+        <view class="pet-badges">
+          <view class="status-badge {{pet.isAdopt === '待领养' ? 'adoptable' : 'adopted'}}">
+            <text class="badge-text">{{pet.isAdopt}}</text>
+          </view>
+          <view class="health-badge {{pet.healthStatus === '健康' ? 'healthy' : 'sick'}}">
+            <text class="badge-text">{{pet.healthStatus}}</text>
+          </view>
+        </view>
       </view>
-      <view class="pet-meta">
-        <text>{{pet.breed}}</text>
-        <text>{{pet.age}}岁</text>
-        <text>{{pet.gender}}</text>
+      
+      <view class="pet-meta-grid">
+        <view class="meta-item">
+          <view class="meta-icon">🐕</view>
+          <view class="meta-content">
+            <text class="meta-label">品种</text>
+            <text class="meta-value">{{pet.breed}}</text>
+          </view>
+        </view>
+        <view class="meta-item">
+          <view class="meta-icon">🎂</view>
+          <view class="meta-content">
+            <text class="meta-label">年龄</text>
+            <text class="meta-value">{{pet.age}}岁</text>
+          </view>
+        </view>
+        <view class="meta-item">
+          <view class="meta-icon">⚧</view>
+          <view class="meta-content">
+            <text class="meta-label">性别</text>
+            <text class="meta-value">{{pet.gender}}</text>
+          </view>
+        </view>
+        <view class="meta-item">
+          <view class="meta-icon">📍</view>
+          <view class="meta-content">
+            <text class="meta-label">地区</text>
+            <text class="meta-value">{{pet.location}}</text>
+          </view>
+        </view>
       </view>
-      <view class="pet-health">
-        <text class="{{pet.healthStatus === '健康' ? 'health-healthy' : 'health-sick'}}">{{pet.healthStatus}}</text>
-        <text class="pet-location">{{pet.location}}</text>
-      </view>
-      <view class="pet-desc">{{pet.description}}</view>
+    </view>
+    
+    <view class="pet-description">
+      <text class="description-title">详细介绍</text>
+      <text class="description-text">{{pet.description || '暂无详细介绍'}}</text>
     </view>
   </view>
 
   <!-- 疫苗信息卡片 -->
   <view class="vaccine-card" wx:if="{{!vaccineLoading && !vaccineError}}">
-    <view class="vaccine-header">
-      <text class="vaccine-title">疫苗信息</text>
+    <view class="card-header">
+      <view class="card-icon">💉</view>
+      <text class="card-title">健康档案</text>
     </view>
-    <view wx:if="{{vaccineInfo}}">
-      <view class="vaccine-item">
-        <text class="vaccine-label">疫苗记录：</text>
-        <text class="vaccine-value">{{vaccineInfo.vaccineRecord || '无'}}</text>
-      </view>
-      <view class="vaccine-item">
-        <text class="vaccine-label">绝育状态：</text>
-        <text class="vaccine-value">{{vaccineInfo.sterilization === 1 ? '已绝育' : '未绝育'}}</text>
-      </view>
-      <view class="vaccine-item">
-        <text class="vaccine-label">最近体检：</text>
-        <text class="vaccine-value">{{vaccineInfo.lastCheckupStr || '无'}}</text>
+    
+    <view wx:if="{{vaccineInfo}}" class="vaccine-content">
+      <view class="info-grid">
+        <view class="info-item">
+          <text class="info-label">疫苗记录</text>
+          <text class="info-value">{{vaccineInfo.vaccineRecord || '无'}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">绝育状态</text>
+          <text class="info-value {{vaccineInfo.sterilization === 1 ? 'success' : 'warning'}}">
+            {{vaccineInfo.sterilization === 1 ? '已绝育' : '未绝育'}}
+          </text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">最近体检</text>
+          <text class="info-value">{{vaccineInfo.lastCheckupStr || '无'}}</text>
+        </view>
       </view>
     </view>
-    <view wx:else class="vaccine-empty">暂无疫苗记录</view>
+    
+    <view wx:else class="empty-state">
+      <view class="empty-icon">📋</view>
+      <text class="empty-text">暂无健康档案</text>
+      <text class="empty-desc">该宠物暂无详细的健康信息记录</text>
+    </view>
   </view>
-  <view wx:if="{{vaccineLoading}}" class="vaccine-loading">疫苗信息加载中...</view>
-  <view wx:if="{{vaccineError}}" class="vaccine-error">疫苗信息获取失败</view>
+  
+  <view wx:if="{{vaccineLoading}}" class="loading-state">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载健康档案中...</text>
+  </view>
+  
+  <view wx:if="{{vaccineError}}" class="error-state">
+    <view class="error-icon">⚠️</view>
+    <text class="error-text">健康档案获取失败</text>
+    <button class="retry-btn" bindtap="retryLoadVaccine">
+      <text class="btn-text">重试</text>
+    </button>
+  </view>
 
   <!-- 领养按钮吸底 -->
   <view class="adopt-btn-fixed">
-    <button class="adopt-btn" bindtap="onAdopt">领养申请</button>
+    <button class="adopt-btn" bindtap="onAdopt" disabled="{{pet.isAdopt !== '待领养'}}">
+      <text class="btn-icon">🏠</text>
+      <text class="btn-text">{{pet.isAdopt === '待领养' ? '申请领养' : '已被领养'}}</text>
+    </button>
   </view>
 
   <!-- 领养申请表单弹窗 -->
-  <view wx:if="{{showAdoptForm}}" class="adopt-form-mask">
-    <view class="adopt-form">
+  <view wx:if="{{showAdoptForm}}" class="adopt-form-mask" bindtap="onCloseAdoptForm">
+    <view class="adopt-form" catchtap="stopPropagation">
       <view class="form-header">
         <text class="form-title">领养申请</text>
-        <text class="form-close" bindtap="onCloseAdoptForm">×</text>
+        <view class="form-close" bindtap="onCloseAdoptForm">×</view>
       </view>
+      
       <view class="form-content">
         <view class="form-item">
-          <text class="form-label">申请理由</text>
+          <text class="form-label">申请理由 <text class="required">*</text></text>
           <textarea 
             class="form-input" 
-            placeholder="请详细说明您想要领养这只宠物的理由" 
+            placeholder="请详细说明您想要领养这只宠物的理由..." 
             value="{{applyReason}}" 
             bindinput="onApplyReasonInput"
             maxlength="500"
           ></textarea>
+          <text class="char-count">{{applyReason.length}}/500</text>
         </view>
+        
         <view class="form-item">
-          <text class="form-label">养宠经验</text>
+          <text class="form-label">养宠经验 <text class="required">*</text></text>
           <textarea 
             class="form-input" 
-            placeholder="请描述您的养宠经验，包括是否养过宠物、了解宠物护理等" 
+            placeholder="请描述您的养宠经验，包括是否养过宠物、了解宠物护理等..." 
             value="{{petExperience}}" 
             bindinput="onPetExperienceInput"
             maxlength="500"
           ></textarea>
+          <text class="char-count">{{petExperience.length}}/500</text>
         </view>
-        <view wx:if="{{adoptError}}" class="form-error">{{adoptErrorMsg}}</view>
+        
+        <view wx:if="{{adoptError}}" class="form-error">
+          <text class="error-icon">⚠️</text>
+          <text class="error-text">{{adoptErrorMsg}}</text>
+        </view>
+        
         <view class="form-buttons">
-          <button 
-            class="form-submit-btn" 
-            loading="{{adoptLoading}}" 
-            bindtap="submitAdoptionApply"
-          >提交申请</button>
-          <button 
-            class="form-cancel-btn" 
-            bindtap="onCloseAdoptForm"
-          >取消</button>
+          <button class="form-btn cancel" bindtap="onCloseAdoptForm">
+            <text class="btn-text">取消</text>
+          </button>
+          <button class="form-btn primary" loading="{{adoptLoading}}" bindtap="submitAdoptionApply">
+            <text class="btn-text">{{adoptLoading ? '提交中...' : '提交申请'}}</text>
+          </button>
         </view>
       </view>
     </view>
