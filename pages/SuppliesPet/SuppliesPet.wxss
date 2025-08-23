@@ -1,0 +1,120 @@
+/* pages/SuppliesPet/SuppliesPet.wxss */
+
+.container {
+  padding-bottom: 80rpx;
+  background: #f7fafc;
+  min-height: 100vh;
+}
+.loading, .error, .empty {
+  text-align: center;
+  color: #888;
+  font-size: 28rpx;
+  margin: 40rpx 0;
+}
+.supply-item {
+  background: #fff;
+  border-radius: 24rpx;
+  box-shadow: 0 6rpx 24rpx rgba(72,187,120,0.10);
+  margin: 28rpx 32rpx 0 32rpx;
+  padding: 32rpx 24rpx 24rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10rpx;
+}
+.supply-img {
+  width: 100%;
+  height: 240rpx;
+  border-radius: 18rpx;
+  object-fit: cover;
+  margin-bottom: 18rpx;
+  background: #f2f2f2;
+  box-shadow: 0 2rpx 8rpx rgba(72,187,120,0.06);
+}
+.supply-main-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 6rpx;
+}
+.supply-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #222;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.supply-category {
+  font-size: 22rpx;
+  padding: 2rpx 10rpx;
+  border-radius: 9999rpx;
+  font-weight: 600;
+  background: rgba(72,187,120,0.10);
+  color: #38a169;
+}
+.supply-hot {
+  font-size: 20rpx;
+  padding: 2rpx 10rpx;
+  border-radius: 9999rpx;
+  font-weight: 600;
+  background: linear-gradient(90deg, #ffb347 60%, #ffcc80 100%);
+  color: #b45309;
+  margin-left: 8rpx;
+}
+.supply-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 4rpx;
+}
+.supply-brand {
+  color: #888;
+}
+.supply-price {
+  color: #e53e3e;
+  font-weight: 700;
+  font-size: 28rpx;
+}
+.supply-desc-block {
+  width: 100%;
+  background: #f8fafc;
+  border-radius: 12rpx;
+  padding: 12rpx 14rpx;
+  margin: 8rpx 0 0 0;
+}
+.supply-desc {
+  font-size: 24rpx;
+  color: #888;
+  line-height: 1.7;
+}
+.detail-btn {
+  margin-top: 16rpx;
+  width: 100%;
+  height: 64rpx;
+  background: linear-gradient(90deg, #48bb78 60%, #42b983 100%);
+  color: #fff;
+  border: none;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  box-shadow: 0 2rpx 8rpx rgba(72,187,120,0.10);
+}
+
+/* 加载更多相关样式 */
+.loading-more, .no-more {
+  text-align: center;
+  color: #888;
+  font-size: 24rpx;
+  margin: 40rpx 0;
+  padding: 20rpx 0;
+}
+.loading-more {
+  color: #48bb78;
+}
+.no-more {
+  color: #999;
+}

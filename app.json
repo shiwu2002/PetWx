@@ -1,0 +1,59 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/logs/logs",
+    "pages/PetAll/PetAll",
+    "pages/homePage/homePage",
+    "pages/detail/detail",
+    "pages/PetDetails/PetDetails",
+    "pages/login/login",
+    "pages/SuppliesPet/SuppliesPet",
+    "pages/SuppliesDetail/SuppliesDetail",
+    "pages/myApply/myApply",
+    "pages/TaskByApplyId/TaskByApplyId",
+    "pages/MyMain/MyMain",
+    "pages/chatMessage/chatMessage"
+  ],
+  "tabBar": {
+    "color": "#000000",
+    "selectedColor": "#07C160",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/homePage/homePage",
+        "text": "首页公告"
+      },
+      {
+        "pagePath": "pages/PetAll/PetAll",
+        "text": "宠物列表"
+      },
+      {
+        "pagePath": "pages/SuppliesPet/SuppliesPet",
+        "text": "宠物商店"
+      },
+      {
+        "pagePath": "pages/myApply/myApply",
+        "text": "救助宠物"
+      },
+      {
+        "pagePath":"pages/MyMain/MyMain",
+        "text":"我的"
+      }
+    ]
+  },
+  "window": {
+    "navigationBarTitleText": "宠物领养",
+    "navigationBarBackgroundColor": "#48bb78",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f7fafc",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "componentPlaceholder": {
+    "pet-list": "view"
+  }
+}

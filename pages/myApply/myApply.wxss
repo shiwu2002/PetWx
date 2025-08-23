@@ -1,0 +1,130 @@
+.discover-form {
+  padding: 40rpx 32rpx 0 32rpx;
+  background: #fff;
+  border-radius: 32rpx;
+  box-shadow: 0 4rpx 24rpx #ffe0b2;
+  margin: 40rpx 24rpx;
+}
+.form-row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 32rpx;
+}
+.form-label {
+  width: 140rpx;
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+  flex-shrink: 0;
+  margin-top: 8rpx;
+}
+.form-input {
+  flex: 1;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+  font-size: 30rpx;
+  color: #222;
+  background: #fafbfc;
+}
+.form-textarea {
+  flex: 1;
+  min-height: 100rpx;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+  font-size: 30rpx;
+  color: #222;
+  background: #fafbfc;
+}
+.form-img-list {
+  display: flex;
+  flex-direction: row;
+  gap: 18rpx;
+  align-items: center;
+}
+.img-preview-wrap {
+  position: relative;
+}
+.img-preview {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  object-fit: cover;
+  box-shadow: 0 2rpx 8rpx #e0e0e0;
+  background: #f7f8fa;
+}
+.img-remove {
+  position: absolute;
+  top: -16rpx;
+  right: -16rpx;
+  width: 36rpx;
+  height: 36rpx;
+  background: #ff4d4f;
+  color: #fff;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 36rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  z-index: 2;
+  box-shadow: 0 2rpx 8rpx #ffb3b3;
+}
+.img-add-btn {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  background: #f5f6fa;
+  color: #bbb;
+  font-size: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1rpx dashed #e0e0e0;
+}
+.rescue-banner-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 24rpx;
+}
+.rescue-banner {
+  width: 90vw;
+  max-width: 700rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 24rpx #ffe0b2;
+}
+.rescue-tip {
+  margin: 32rpx 32rpx 0 32rpx;
+  font-size: 28rpx;
+  color: #ff9800;
+  background: #fff8e1;
+  border-radius: 16rpx;
+  padding: 18rpx 24rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 8rpx #ffe0b2;
+}
+.img-tip {
+  font-size: 24rpx;
+  color: #ff9800;
+  margin-top: 8rpx;
+  margin-left: 12rpx;
+}
+.form-submit-btn {
+  width: 100%;
+  margin-top: 32rpx;
+  background: linear-gradient(90deg, #ff9800, #ffb74d);
+  color: #fff;
+  border: none;
+  border-radius: 24rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  padding: 24rpx 0;
+  box-shadow: 0 2rpx 8rpx #ffe0b2;
+  letter-spacing: 2rpx;
+  transition: background 0.2s;
+}
+.form-submit-btn:active {
+  background: linear-gradient(90deg, #ffb74d, #ff9800);
+}

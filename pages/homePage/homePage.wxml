@@ -1,0 +1,88 @@
+<view class="container">
+  <!-- 头部区域 -->
+  <view class="header">
+    <view class="header-content">
+      <view class="welcome-section">
+        <text class="welcome-title">欢迎来到宠物世界</text>
+        <text class="welcome-subtitle">让每一个生命都被温柔以待</text>
+      </view>
+      <view class="header-actions">
+        <view class="action-btn" bindtap="refreshData">
+          <text class="action-icon">🔄</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-section">
+    <view class="stats-grid">
+      <view class="stat-card">
+        <view class="stat-icon">🐾</view>
+        <view class="stat-content">
+          <text class="stat-number">{{announcements.length || 0}}</text>
+          <text class="stat-label">公告总数</text>
+        </view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-icon">📅</view>
+        <view class="stat-content">
+          <text class="stat-number">{{todayCount || 0}}</text>
+          <text class="stat-label">今日更新</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载公告中...</text>
+  </view>
+
+  <!-- 错误状态 -->
+  <view wx:if="{{error}}" class="error-container">
+    <view class="error-content">
+      <view class="error-icon">⚠️</view>
+      <text class="error-text">获取公告失败</text>
+      <text class="error-desc">请检查网络连接后重试</text>
+      <button class="retry-btn" bindtap="loadAnnouncements">
+        <text class="btn-text">重新加载</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 公告列表 -->
+  <scroll-view wx:else class="announcement-list" enablePullDownRefresh bindrefresherrefresh="onPullDownRefresh">
+    <view class="list-header">
+      <text class="list-title">最新公告</text>
+      <text class="list-subtitle">及时了解平台动态</text>
+    </view>
+    
+    <view class="announcement-item" wx:for="{{announcements}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}">
+      <view class="item-content">
+        <view class="item-main">
+          <text class="title">{{item.title}}</text>
+          <view class="item-meta">
+            <view class="meta-item">
+              <text class="meta-icon">🕒</text>
+              <text class="meta-text">{{item.publishTime}}</text>
+            </view>
+            <view class="meta-item">
+              <text class="meta-icon">📌</text>
+              <text class="meta-text">公告</text>
+            </view>
+          </view>
+        </view>
+        <view class="item-arrow">›</view>
+      </view>
+    </view>
+    
+    <!-- 空状态 -->
+    <view wx:if="{{announcements.length === 0}}" class="empty-state">
+      <view class="empty-icon">📢</view>
+      <text class="empty-text">暂无公告</text>
+      <text class="empty-desc">有新公告时会在这里显示</text>
+    </view>
+  </scroll-view>
+</view>

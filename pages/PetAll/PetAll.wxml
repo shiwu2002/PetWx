@@ -1,0 +1,75 @@
+<view class="container">
+  <!-- 顶部搜索框 -->
+  <view class="search-container">
+    <view class="search-box">
+      <icon type="search" size="24" class="search-icon"></icon>
+      <input type="text" placeholder="请输入宠物品种搜索" 
+             bindinput="onSearchInput" 
+             value="{{searchKeyword}}"
+             class="search-input"/>
+             <button bindtap="searchPets" class="search-btn">搜索</button>
+    </view>
+  </view>
+
+  <!-- 主要内容区 -->
+  <view class="main">
+    <!-- 宠物列表 -->
+    <view id="petList" class="pet-list" wx:if="{{processedPets && processedPets.length > 0}}">
+      <view wx:for="{{processedPets}}" wx:for-item="pet" wx:key="id" class="pet-card-vertical" bindtap="handlePetClick" data-id="{{pet.id}}">
+        <view class="pet-image-vertical">
+          <image 
+            src="{{pet.processedImageUrl}}"
+            alt="{{pet.name}}" 
+            lazy-load="true"
+            data-pet-id="{{pet.id}}"
+            mode="aspectFill"
+            class="w-full h-full object-cover"
+            binderror="handleImageError"
+            bindtap="onPetImageTap"
+          >
+          </image>
+        </view>
+        <view class="pet-info-vertical">
+          <view class="name-status-row">
+            <text class="pet-name">{{pet.name}}</text>
+            <text class="status {{pet.isAdopt === '待领养' ? 'status-adoptable' : 'status-deceased'}}">{{pet.isAdopt}}</text>
+          </view>
+          <view class="breed-age-gender-row">
+            <text class="breed">{{pet.breed}}</text>
+            <text class="age">{{pet.age}}岁</text>
+            <text class="gender">{{pet.gender}}</text>
+          </view>
+          <view class="health-location-row">
+            <icon type="success" size="14"></icon> 
+            <text class="{{pet.healthStatus === '健康' ? 'health-healthy' : 'health-sick'}}">{{pet.healthStatus}}</text>
+            <text class="location">{{"地区：" + pet.location}}</text>
+          </view>
+                    <view class="description-row">
+            <view class="description-vertical">
+              {{pet.description}}
+            </view>
+            <!-- 点赞功能 -->
+            <view class="like-section" catchtap="toggleLike" data-target-id="{{pet.id}}">
+              <view class="like-icon {{likeStates[pet.id] ? 'liked' : ''}}">
+                {{likeStates[pet.id] ? '❤️' : '🤍'}}
+              </view>
+              <view class="like-count">{{likeCounts[pet.id] || 0}}</view>
+            </view>
+          </view>
+          
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载更多按钮和状态提示 -->
+    <view class="load-more" wx:if="{{hasMore}}">
+      <button bindtap="loadMorePets" disabled="{{loading}}" class="load-btn">
+        <loading hidden="{{!loading}}" class="loading-icon"></loading>
+        {{loading ? '加载中...' : '加载更多'}}
+      </button>
+    </view>
+    <view class="no-more" wx:if="{{!hasMore && processedPets && processedPets.length > 0}}">
+      已加载全部数据
+    </view>
+  </view>
+</view>

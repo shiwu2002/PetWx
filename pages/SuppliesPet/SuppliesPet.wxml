@@ -1,0 +1,27 @@
+<!--pages/SuppliesPet/SuppliesPet.wxml-->
+<view class="container">
+  <view wx:if="{{loading && suppliesList.length === 0}}" class="loading">加载中...</view>
+  <view wx:if="{{error && suppliesList.length === 0}}" class="error">加载失败，请下拉重试</view>
+  <view wx:if="{{suppliesList.length === 0 && !loading && !error}}" class="empty">暂无商品</view>
+  <block wx:for="{{suppliesList}}" wx:key="id">
+    <view class="supply-item">
+      <image class="supply-img" src="{{item.imageUrl}}" mode="aspectFill" />
+      <view class="supply-main-row">
+        <text class="supply-name">{{item.productName}}</text>
+        <text class="supply-category">{{item.category}}</text>
+        <text wx:if="{{item.isHot == 1}}" class="supply-hot">热销</text>
+      </view>
+      <view class="supply-meta-row">
+        <text class="supply-brand">品牌：{{item.brand}}</text>
+        <text class="supply-price">￥{{item.price}}</text>
+      </view>
+      <view class="supply-desc-block">
+        <text class="supply-desc">{{item.description}}</text>
+      </view>
+      <button class="detail-btn" data-id="{{item.id}}" bindtap="goToDetail">查看详情</button>
+    </view>
+  </block>
+  <!-- 加载更多提示 -->
+  <view wx:if="{{loading && suppliesList.length > 0}}" class="loading-more">加载中...</view>
+  <view wx:if="{{!hasMore && suppliesList.length > 0}}" class="no-more">没有更多了</view>
+</view>

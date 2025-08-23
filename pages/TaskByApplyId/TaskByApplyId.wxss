@@ -1,0 +1,65 @@
+/* pages/TaskByApplyId/TaskByApplyId.wxss */
+.task-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  margin: 18px 12px;
+  padding: 20px 16px 16px 16px;
+}
+.task-row {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: #333;
+}
+.task-label {
+  width: 90px;
+  color: #43a047;
+  font-weight: bold;
+}
+/* 表单样式 */
+.form-block {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  margin: 18px 12px;
+  padding: 20px 16px 16px 16px;
+}
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.form-label {
+  width: 90px;
+  color: #43a047;
+  font-size: 15px;
+  font-weight: bold;
+}
+.picker-value, .form-input {
+  flex: 1;
+  font-size: 15px;
+  color: #333;
+  background: #f7f7f7;
+  border-radius: 6px;
+  padding: 8px 10px;
+  border: 1px solid #e0e0e0;
+  margin-left: 8px;
+}
+.form-input {
+  height: 36px;
+}
+.submit-btn {
+  width: 100%;
+  background: #43a047;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  padding: 12px 0;
+  font-weight: bold;
+  box-shadow: 0 1px 4px rgba(67,160,71,0.08);
+  margin-top: 10px;
+}
+/* 如需统一提示样式，建议在wxml加自定义类名再用类名控制 */

@@ -1,0 +1,113 @@
+<view class="main-container side-layout">
+  <!-- 左侧导航栏 -->
+  <view class="side-nav">
+    <block wx:for="{{sideNavList}}" wx:key="key">
+      <view class="side-nav-item" data-nav="{{item.key}}" bindtap="onSelectNav" wx:class="{active: selectedNav === item.key}">
+        {{item.label}}
+      </view>
+    </block>
+  </view>
+
+  <!-- 右侧内容区 -->
+  <view class="side-content">
+    <!-- 个人信息内容 -->
+    <block wx:if="{{selectedNav === 'profile'}}">
+      <view class="user-header">
+        <image class="avatar" src="{{userInfo.avatarUrl || '/components/IMAGES/Discover.png'}}" mode="aspectFill" bindtap="onChooseAvatar"/>
+        <view class="user-info">
+          <view class="nickname">{{userInfo.nickName || '未登录'}}</view>
+          <view class="phone">手机号：{{userInfo.phone || '未绑定'}}</view>
+          <button class="header-btn" bindtap="editProfile">补充信息</button>
+        </view>
+      </view>
+      <view class="profile-info-simple">
+        <view class="profile-row"><text class="profile-label">用户名：</text><text>{{userInfo.username || '无'}}</text></view>
+        <view class="profile-row"><text class="profile-label">余额：</text><text>{{userInfo.money !== '' ? userInfo.money : '无'}} 元</text></view>
+        <view class="profile-row"><text class="profile-label">信用分：</text><text>{{userInfo.credit_score !== '' ? userInfo.credit_score : '无'}}</text></view>
+      </view>
+      <view class="profile-service-btn-wrap">
+        <button class="profile-service-btn" bindtap="contactService">联系客服</button>
+      </view>
+    </block>
+
+    <block wx:if="{{selectedNav === 'myApply'}}">
+      <view wx:if="{{loading}}" class="loading">
+        <text>加载中...</text>
+      </view>
+      <view wx:elif="{{error}}" class="error">
+        <text>{{error}}</text>
+      </view>
+      <block wx:elif="{{applyData && applyData.length}}">
+        <block wx:for="{{applyData}}" wx:key="id">
+          <view class="apply-card">
+            <image 
+              class="pet-image-full" 
+              src="{{applyDataPreviewUrls[index]}}" 
+              mode="aspectFill"
+            />
+            <view class="apply-header">
+              <view class="pet-nickname">{{item.petName}}</view>
+              <text class="apply-status" data-status="{{item.status}}">{{item.status}}</text>
+            </view>
+            <view class="main-row-flex">
+              <view class="pet-section-flex">
+                <view class="section-title">宠物信息</view>
+                <view class="info-row-flex"><text class="label">品种：</text><text>{{item.petBreed}}</text></view>
+                <view class="info-row-flex"><text class="label">年龄：</text><text>{{item.petAge}}</text></view>
+                <view class="info-row-flex"><text class="label">性别：</text><text>{{item.petGender}}</text></view>
+                <view class="info-row-flex"><text class="label">健康状况：</text><text>{{item.petHealthStatus}}</text></view>
+              </view>
+              <view class="apply-section-flex">
+                <view class="section-title">申请信息</view>
+                <view class="info-row-flex"><text class="label">申请人：</text><text>{{item.userNickname}}</text></view>
+                <view class="info-row-flex"><text class="label">申请理由：</text><text>{{item.applyReason}}</text></view>
+                <view class="info-row-flex"><text class="label">养宠经验：</text><text>{{item.petExperience}}</text></view>
+              </view>
+            </view>
+            <button class="view-task-btn" data-applyid="{{item.id}}" bindtap="onViewTask">
+              查看家访任务
+            </button>
+          </view>
+        </block>
+      </block>
+      <view wx:else class="empty">
+        <text>暂无申请数据</text>
+      </view>
+    </block>
+
+    <!-- 救助信息内容 -->
+    <block wx:if="{{selectedNav === 'myDiscover'}}">
+      <view wx:if="{{myDiscoverData.length === 0}}" class="empty">
+        <text>暂无救助信息</text>
+      </view>
+      <block wx:for="{{myDiscoverData}}" wx:key="id">
+        <view class="discover-card">
+          <view class="discover-header">
+            <text class="discover-type">{{item.animalType}}</text>
+            <text class="discover-status">{{item.status}}</text>
+          </view>
+          <view class="discover-desc">{{item.description}}</view>
+          <view class="discover-location">发现地点：{{item.location}}</view>
+          <view class="discover-img-list">
+            <block wx:for="{{myDiscoverPreviewUrls[index]}}" wx:key="img">
+              <image class="discover-img" src="{{img}}" mode="aspectFill" />
+            </block>
+          </view>
+        </view>
+      </block>
+    </block>
+
+    <!-- 补充信息弹窗 -->
+    <view wx:if="{{showEditModal}}" class="modal-mask">
+      <view class="modal">
+        <view class="modal-title">补充/编辑个人信息</view>
+        <input class="modal-input" placeholder="昵称" value="{{editNickName}}" bindinput="onEditNickName" />
+        <input class="modal-input" placeholder="手机号" value="{{editPhone}}" bindinput="onEditPhone" />
+        <view class="modal-actions">
+          <button class="modal-save" bindtap="saveProfile">保存</button>
+          <button class="modal-cancel" bindtap="closeEditModal">取消</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

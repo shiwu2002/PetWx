@@ -1,0 +1,32 @@
+<view class="container">
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载详情中...</text>
+  </view>
+
+  <!-- 错误状态 -->
+  <view wx:if="{{error}}" class="error-container">
+    <image src="/images/error.png" class="error-icon" />
+    <text class="error-text">获取详情失败</text>
+    <button class="retry-btn" bindtap="onLoad">重新加载</button>
+  </view>
+
+  <!-- 详情内容 -->
+  <scroll-view wx:else class="detail-content" scroll-y>
+    <view class="card">
+      <view class="detail-header">
+        <view class="title-row">
+          <text class="title">{{announcement.title}}</text>
+          <text class="time">{{announcement.publishTime}}</text>
+        </view>
+        <view class="title-underline"></view>
+      </view>
+      <view class="detail-body">
+        <text class="content">{{announcement.content}}</text>
+      </view>
+    </view>
+
+  </scroll-view>
+</view>

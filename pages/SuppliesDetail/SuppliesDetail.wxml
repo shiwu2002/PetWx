@@ -1,0 +1,63 @@
+<!--pages/SuppliesDetail/SuppliesDetail.wxml-->
+<view class="container">
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+  <view wx:if="{{error}}" class="error">加载失败，请返回重试</view>
+  <view wx:if="{{supply}}">
+    <!-- 顶部大图横幅 -->
+    <view class="banner-box">
+      <image class="banner-img" src="{{supply.imageUrl}}" mode="aspectFill" />
+    </view>
+    <!-- 主信息卡片 -->
+    <view class="main-info-card">
+      <view class="main-title-row">
+        <text class="main-name">{{supply.productName}}</text>
+        <text wx:if="{{supply.isHot == 1}}" class="main-hot">热销</text>
+      </view>
+      <view class="main-meta-row">
+        <text class="main-category">{{supply.category}}</text>
+        <text class="main-brand">品牌：{{supply.brand}}</text>
+      </view>
+      <view class="main-price-row">
+        <text class="main-price">￥{{supply.price}}</text>
+        <text class="main-rating">评分：{{supply.rating}}分</text>
+      </view>
+    </view>
+    <!-- 参数信息表格 -->
+    <view class="param-table">
+      <view class="param-row"><text class="param-label">库存</text><text class="param-value">{{supply.stockQuantity}}</text></view>
+      <view class="param-row"><text class="param-label">重量</text><text class="param-value">{{supply.productWeight}}g</text></view>
+      <view class="param-row"><text class="param-label">尺寸</text><text class="param-value">{{supply.sizeDimensions}}</text></view>
+      <view class="param-row"><text class="param-label">材质</text><text class="param-value">{{supply.materials}}</text></view>
+    </view>
+    <!-- 商品简介分块 -->
+    <view class="desc-block">
+      <text class="desc-title">商品简介</text>
+      <text class="desc-content">{{supply.description}}</text>
+    </view>
+    <!-- 时间信息弱化 -->
+    <view class="time-row">
+      <text class="time-info">生产日期：{{supply.manufactureDate}}</text>
+      <text wx:if="{{supply.expiryDate}}" class="time-info">有效期至：{{supply.expiryDate}}</text>
+    </view>
+    <view class="time-row">
+      <text class="time-info">创建：{{supply.createdAt}}</text>
+      <text class="time-info">更新：{{supply.updatedAt}}</text>
+    </view>
+    <!-- 底部吸底操作按钮 -->
+    <view class="bottom-bar">
+      <button class="buy-btn" bindtap="onBuyTap">立即购买</button>
+      <button class="cart-btn">加入购物车</button>
+    </view>
+    <!-- 购买弹窗 -->
+    <view wx:if="{{showBuyPopup}}" class="buy-popup-mask">
+      <view class="buy-popup">
+        <view class="buy-popup-title">购买数量</view>
+        <input class="buy-popup-input" type="number" min="1" :max="{{supply.stockQuantity}}" value="{{buyNum}}" bindinput="onBuyNumInput" />
+        <view class="buy-popup-actions">
+          <button class="buy-popup-cancel" bindtap="onCloseBuyPopup">取消</button>
+          <button class="buy-popup-confirm" loading="{{buyLoading}}" bindtap="onConfirmBuy">确认购买</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

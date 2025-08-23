@@ -1,0 +1,145 @@
+<!-- login.wxml -->
+<view class="container">
+  <view class="background-decoration">
+    <view class="decoration-circle circle-1"></view>
+    <view class="decoration-circle circle-2"></view>
+    <view class="decoration-circle circle-3"></view>
+  </view>
+  
+  <view class="header">
+    <view class="logo">
+      <text class="logo-text">PetWx</text>
+      <text class="logo-subtitle">宠物爱心平台</text>
+    </view>
+    <view class="welcome-text">欢迎回来</view>
+  </view>
+  
+  <view class="login-box">
+    <view class="form-container">
+      <view class="input-group">
+        <view class="input-wrapper">
+          <view class="input-icon">👤</view>
+          <input 
+            class="input" 
+            placeholder="请输入用户名" 
+            bindinput="handleUsernameInput"
+            value="{{username}}"
+          />
+        </view>
+      </view>
+      
+      <view class="input-group">
+        <view class="input-wrapper">
+          <view class="input-icon">🔒</view>
+          <input 
+            class="input pwd-input" 
+            placeholder="请输入密码" 
+            bindinput="handlePasswordInput"
+            value="{{password}}"
+            type="{{passwordVisible ? 'text' : 'password'}}"
+            password="{{!passwordVisible}}"
+          />
+          <image 
+            class="pwd-toggle-icon"
+            src="/components/IMAGES/{{passwordVisible ? 'eye_open.png' : 'eye_close.png'}}"
+            bindtap="togglePasswordVisible"
+            mode="aspectFit"
+          />
+        </view>
+      </view>
+      
+      <button 
+        class="login-btn" 
+        bindtap="login"
+        loading="{{loading}}"
+        disabled="{{loading}}" 
+      >
+        <text class="btn-text">{{loading ? '登录中...' : '登录'}}</text>
+      </button>
+      
+      <view class="action-row">
+        <text class="action-link" bindtap="showRegisterModal">注册账号</text>
+        <text class="action-link" bindtap="showForgotModal">找回密码</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 注册弹窗 -->
+  <view wx:if="{{showRegister}}" class="modal-mask" bindtap="closeRegisterModal">
+    <view class="modal" catchtap="stopPropagation">
+      <view class="modal-header">
+        <view class="modal-title">注册账号</view>
+        <view class="modal-close" bindtap="closeRegisterModal">×</view>
+      </view>
+      
+      <view class="modal-body">
+        <view class="modal-input-group">
+          <input class="modal-input" placeholder="用户名(至少6位)" value="{{regUsername}}" bindinput="onRegUsername" />
+        </view>
+        
+        <view class="modal-input-group">
+          <view class="pwd-row">
+            <input class="modal-input pwd-input" placeholder="密码(至少6位)" value="{{regPassword}}" 
+              type="{{regPasswordVisible ? 'text' : 'password'}}" password="{{!regPasswordVisible}}" bindinput="onRegPassword" />
+            <image 
+              class="pwd-toggle-icon"
+              src="/components/IMAGES/{{regPasswordVisible ? 'eye_open.png' : 'eye_close.png'}}"
+              bindtap="toggleRegPasswordVisible"
+              mode="aspectFit"
+            />
+          </view>
+        </view>
+        
+        <view class="modal-input-group">
+          <input class="modal-input" placeholder="昵称" value="{{regNickname}}" bindinput="onRegNickname" />
+        </view>
+        
+        <view class="modal-input-group">
+          <input class="modal-input" placeholder="手机号" value="{{regPhone}}" bindinput="onRegPhone" />
+        </view>
+      </view>
+      
+      <view class="modal-actions">
+        <button class="modal-btn cancel" bindtap="closeRegisterModal">取消</button>
+        <button class="modal-btn primary" bindtap="register">注册</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 找回密码弹窗 -->
+  <view wx:if="{{showForgot}}" class="modal-mask" bindtap="closeForgotModal">
+    <view class="modal" catchtap="stopPropagation">
+      <view class="modal-header">
+        <view class="modal-title">找回密码</view>
+        <view class="modal-close" bindtap="closeForgotModal">×</view>
+      </view>
+      
+      <view class="modal-body">
+        <view class="modal-input-group">
+          <input class="modal-input" placeholder="用户名" value="{{fgUsername}}" bindinput="onFgUsername" />
+        </view>
+        
+        <view class="modal-input-group">
+          <input class="modal-input" placeholder="手机号" value="{{fgPhone}}" bindinput="onFgPhone" />
+        </view>
+        
+        <view class="modal-input-group">
+          <view class="pwd-row">
+            <input class="modal-input pwd-input" placeholder="新密码" value="{{fgPassword}}" type="{{fgPasswordVisible ? 'text' : 'password'}}" password="{{!fgPasswordVisible}}" bindinput="onFgPassword" />
+            <image 
+              class="pwd-toggle-icon"
+              src="/components/IMAGES/{{fgPasswordVisible ? 'eye_open.png' : 'eye_close.png'}}"
+              bindtap="toggleFgPasswordVisible"
+              mode="aspectFit"
+            />
+          </view>
+        </view>
+      </view>
+      
+      <view class="modal-actions">
+        <button class="modal-btn cancel" bindtap="closeForgotModal">取消</button>
+        <button class="modal-btn primary" bindtap="findPassword">提交</button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,24 @@
+<view class="chat-container">
+  <scroll-view scroll-y="true" class="msg-list" scroll-with-animation scroll-into-view="{{toView}}">
+    <block wx:for="{{messages}}" wx:key="timestamp">
+      <view class="msg-row {{item.sender == userId ? 'me' : 'other'}}">
+        <view class="msg-bubble-wrap {{item.sender == userId ? 'me' : 'other'}}">
+          <image wx:if="{{item.sender != userId}}" class="avatar" src="{{item.senderAvatar || '/components/IMAGES/1293.jpg_wh860.jpg'}}"/>
+          <view class="msg-item {{item.sender == userId ? 'me' : 'other'}}" id="msg-{{item.timestamp}}">
+            <view class="msg-meta">
+              <text class="msg-username">
+                {{item.senderName || (item.sender == userId ? '我' : '对方')}}<block wx:if="{{item.sender == targetId}}">（客服）</block>
+              </text>
+            </view>
+            <view class="msg-content">{{item.content}}</view>
+          </view>
+          <image wx:if="{{item.sender == userId}}" class="avatar" src="{{userInfo.avatarUrl || '/components/IMAGES/1293.jpg_wh860.jpg'}}"/>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+  <view class="input-bar">
+    <input class="input" value="{{inputValue}}" bindinput="onInput" placeholder="请输入消息..." confirm-type="send" bindconfirm="sendMsg"/>
+    <button class="send-btn" bindtap="sendMsg">发送</button>
+  </view>
+</view> 
