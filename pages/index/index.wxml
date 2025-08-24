@@ -1,9 +1,16 @@
 <!--index.wxml-->
+<!-- 自定义导航栏 -->
+<view class="custom-nav-bar">
+  <view class="nav-bar-content">
+    <view class="nav-right"></view>
+  </view>
+</view>
+
 <scroll-view class="scrollarea" scroll-y type="list">
   <view class="container">
     <view class="header">
       <view class="logo">
-        <text class="logo-text">PetWx</text>
+
         <text class="logo-subtitle">宠物爱心平台</text>
       </view>
     </view>

@@ -1,6 +1,226 @@
 /* 宠物详情页面样式 */
+
+/* 评论区域样式 */
+.comments-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10rpx);
+  border-radius: 24rpx;
+  margin: 32rpx;
+  padding: 32rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.section-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.section-count {
+  font-size: 24rpx;
+  color: #718096;
+  margin-left: 12rpx;
+}
+
+.comment-input-container {
+  display: flex;
+  margin-bottom: 32rpx;
+  background: #f7fafc;
+  border-radius: 30rpx;
+  padding: 16rpx 20rpx;
+  align-items: center;
+}
+
+.comment-input {
+  flex: 1;
+  height: 60rpx;
+  font-size: 28rpx;
+  color: #2d3748;
+  background: transparent;
+}
+
+.send-btn {
+  width: 120rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  text-align: center;
+  background: #667eea;
+  color: white;
+  font-size: 28rpx;
+  border-radius: 30rpx;
+  margin-left: 16rpx;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.send-btn[disabled] {
+  opacity: 0.5;
+  background: #cbd5e0;
+}
+
+.comments-list {
+  margin-top: 24rpx;
+}
+
+.comment-item {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #edf2f7;
+}
+
+.reply-item {
+  padding: 24rpx 0 24rpx 40rpx;
+  border-bottom: 1rpx solid #edf2f7;
+  background: #f7fafc;
+  margin-left: 40rpx;
+  border-radius: 16rpx;
+  margin-top: 16rpx;
+}
+
+.three-level-replies {
+  margin-left: 40rpx;
+}
+
+.three-level-reply-item {
+  padding: 20rpx 0 20rpx 40rpx;
+  border-bottom: 1rpx solid #edf2f7;
+  background: #edf2f7;
+  margin-left: 40rpx;
+  border-radius: 16rpx;
+  margin-top: 16rpx;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.avatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-text {
+  font-size: 32rpx;
+  color: #4a5568;
+  font-weight: 600;
+}
+
+.comment-info {
+  flex: 1;
+  margin-left: 16rpx;
+}
+
+.user-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.comment-time {
+  font-size: 24rpx;
+  color: #718096;
+  margin-top: 4rpx;
+}
+
+.comment-actions {
+  display: flex;
+  align-items: center;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  margin-left: 24rpx;
+}
+
+.action-icon {
+  font-size: 28rpx;
+  margin-right: 4rpx;
+}
+
+.action-text {
+  font-size: 24rpx;
+  color: #718096;
+}
+
+.comment-content {
+  font-size: 28rpx;
+  color: #2d3748;
+  line-height: 1.6;
+  margin-bottom: 16rpx;
+}
+
+.comment-content text {
+  word-break: break-all;
+}
+
+.reply-input-container {
+  display: flex;
+  flex-direction: column;
+  background: #f7fafc;
+  border-radius: 20rpx;
+  padding: 16rpx;
+  margin-top: 16rpx;
+}
+
+.reply-input {
+  height: 60rpx;
+  font-size: 28rpx;
+  color: #2d3748;
+  background: transparent;
+  margin-bottom: 16rpx;
+}
+
+.reply-btns {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cancel-btn {
+  width: 120rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  text-align: center;
+  background: #e2e8f0;
+  color: #4a5568;
+  font-size: 28rpx;
+  border-radius: 30rpx;
+  margin-right: 16rpx;
+  padding: 0;
+}
+
+.no-comments {
+  text-align: center;
+  padding: 64rpx 0;
+  color: #718096;
+  font-size: 28rpx;
+}
+
+/* 宠物详情页面样式 */
 page {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #e6f0fa;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -34,7 +254,7 @@ page {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, transparent 50%, rgba(0, 0, 0, 0.1) 100%);
+  background: linear-gradient(to bottom, rgba(102, 126, 234, 0.2) 0%, transparent 50%, rgba(102, 126, 234, 0.1) 100%);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -431,7 +651,7 @@ page {
 }
 
 .retry-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea;
   color: #ffffff;
   border: none;
   border-radius: 16rpx;
@@ -468,7 +688,7 @@ page {
 .adopt-btn {
   width: 100%;
   height: 88rpx;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea;
   color: #ffffff;
   border: none;
   border-radius: 20rpx;
@@ -643,7 +863,7 @@ page {
 }
 
 .form-btn.primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea;
   color: #ffffff;
   box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.3);
 }

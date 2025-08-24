@@ -3,24 +3,30 @@ Page({
     data: {
       announcements: [],
       loading: true,
-      error: false
+      error: false,
+      todayCount: 0
     },
     onLoad() {
       this.loadAnnouncements();
     },
     loadAnnouncements() {
       // 显示加载提示
+      this.setData({
+        loading: true,
+        error: false
+      });
+      
       wx.showLoading({
         title: '加载中...',
         mask: true
       });
       
       wx.request({
-        url: getApp().globalData.MyUrl +'/announcement/getAll',
+        url: app.globalData.MyUrl +'/announcement/getAll',
         method: 'GET',
         header: {
             'content-type': 'application/json',
-            'token': getApp().globalData.token
+            'token': app.globalData.token
           },
         success: (res) => {
             console.log(res)
@@ -31,10 +37,19 @@ Page({
               ...item,
               publishTime: this.formatTime(item.publishTime)
             }));
+            
+            // 计算今日更新数量
+            const today = new Date().toDateString();
+            const todayCount = formattedData.filter(item => {
+              const itemDate = new Date(item.publishTime).toDateString();
+              return itemDate === today;
+            }).length;
+            
             this.setData({
               announcements: formattedData,
               loading: false,
-              error: false
+              error: false,
+              todayCount: todayCount
             });
             // 存储到全局数据，供详情页使用
             app.globalData.announcements = formattedData;
@@ -82,7 +97,10 @@ Page({
     },
     // 下拉刷新
     onPullDownRefresh() {
-      this.loadAnnouncements();
-      wx.stopPullDownRefresh();
+      this.loadAnnouncements().then(() => {
+        wx.stopPullDownRefresh();
+      }).catch(() => {
+        wx.stopPullDownRefresh();
+      });
     }
   });

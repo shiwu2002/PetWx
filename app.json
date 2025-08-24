@@ -20,32 +20,42 @@
     "backgroundColor": "#ffffff",
     "borderStyle": "black",
     "list": [
-      {
-        "pagePath": "pages/homePage/homePage",
-        "text": "首页公告"
-      },
-      {
-        "pagePath": "pages/PetAll/PetAll",
-        "text": "宠物列表"
-      },
-      {
-        "pagePath": "pages/SuppliesPet/SuppliesPet",
-        "text": "宠物商店"
-      },
-      {
-        "pagePath": "pages/myApply/myApply",
-        "text": "救助宠物"
-      },
-      {
-        "pagePath":"pages/MyMain/MyMain",
-        "text":"我的"
-      }
-    ]
+        {
+          "pagePath": "pages/homePage/homePage",
+          "text": "公告",
+          "iconPath": "/components/IMAGES/fooundations.png",
+          "selectedIconPath": "/components/IMAGES/fooundations.png"
+        },
+        {
+          "pagePath": "pages/PetAll/PetAll",
+          "text": "宠物",
+          "iconPath": "/components/IMAGES/pet.png",
+          "selectedIconPath": "/components/IMAGES/pet.png"
+        },
+        {
+          "pagePath": "pages/SuppliesPet/SuppliesPet",
+          "text": "商店",
+          "iconPath": "/components/IMAGES/supper.png",
+          "selectedIconPath": "/components/IMAGES/supper.png"
+        },
+        {
+          "pagePath": "pages/myApply/myApply",
+          "text": "救助",
+          "iconPath": "/components/IMAGES/rescue.png",
+          "selectedIconPath": "/components/IMAGES/rescue.png"
+        },
+        {
+          "pagePath":"pages/MyMain/MyMain",
+          "text":"我的",
+          "iconPath": "/components/IMAGES/my.png",
+          "selectedIconPath": "/components/IMAGES/my.png"
+        }
+      ]
   },
   "window": {
     "navigationBarTitleText": "宠物领养",
-    "navigationBarBackgroundColor": "#48bb78",
-    "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#667eea",
+        "navigationBarTextStyle": "white",
     "backgroundColor": "#f7fafc",
     "backgroundTextStyle": "dark"
   },

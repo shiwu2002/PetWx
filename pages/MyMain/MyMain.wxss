@@ -19,8 +19,8 @@ page {
 }
 
 .side-nav {
-  width: 200rpx;
-  background: rgba(255, 255, 255, 0.95);
+  width: 160rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   backdrop-filter: blur(10rpx);
   box-shadow: 2rpx 0 12rpx rgba(0, 0, 0, 0.1);
   display: flex;
@@ -45,16 +45,16 @@ page {
 }
 
 .nav-title {
-  font-size: 36rpx;
+  font-size: 32rpx;
   font-weight: bold;
-  color: #2d3748;
+  color: #ffffff;
   display: block;
   margin-bottom: 8rpx;
 }
 
 .nav-subtitle {
-  font-size: 24rpx;
-  color: #718096;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.8);
   display: block;
 }
 
@@ -66,11 +66,11 @@ page {
 .side-nav-item {
   padding: 28rpx 0;
   text-align: center;
-  font-size: 28rpx;
-  color: #666;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   border-left: 4rpx solid transparent;
-  background: none;
+  background: rgba(255, 255, 255, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 500;
   border-radius: 0 16rpx 16rpx 0;
@@ -82,17 +82,17 @@ page {
 }
 
 .side-nav-item.active {
-  color: #667eea;
-  background: #f5faff;
-  border-left: 4rpx solid #667eea;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.2);
+  border-left: 4rpx solid #ffffff;
   font-weight: 600;
-  box-shadow: 2rpx 0 12rpx rgba(102, 126, 234, 0.1);
+  box-shadow: 2rpx 0 12rpx rgba(255, 255, 255, 0.1);
 }
 
 /* 鼠标悬停高亮（仅web端有效） */
 .side-nav-item:not(.active):hover {
-  background: #f7f9fc;
-  color: #667eea;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
 }
 
 .nav-icon {
@@ -113,11 +113,11 @@ page {
 .logout-btn {
   padding: 28rpx 0;
   text-align: center;
-  font-size: 28rpx;
-  color: #e53e3e;
+  font-size: 26rpx;
+  color: #ffd6d6;
   cursor: pointer;
   border-left: 4rpx solid transparent;
-  background: none;
+  background: rgba(255, 255, 255, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 500;
   border-radius: 0 16rpx 16rpx 0;
@@ -128,16 +128,17 @@ page {
 }
 
 .logout-btn:hover {
-  background: #fff5f5;
-  border-left: 4rpx solid #e53e3e;
+  background: rgba(255, 223, 223, 0.2);
+  border-left: 4rpx solid #ff9a9a;
+  color: #ffffff;
 }
 
 /* 右侧内容区样式 */
 .side-content {
   flex: 1;
-  padding: 32rpx 32rpx 32rpx 232rpx;
-  overflow-y: auto;
-  background: transparent;
+  padding: 32rpx 32rpx 32rpx 192rpx;
+  overflow-y: hidden;
+  background: #E2EAF4;
   min-height: 100vh;
 }
 
@@ -170,6 +171,18 @@ page {
   padding: 40rpx;
   margin-bottom: 40rpx;
   transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* 编辑资料按钮样式 */
+.edit-profile-btn {
+  max-width: 160rpx;
+  padding: 8rpx 16rpx;
+  font-size: 24rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 40rpx;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+  border: none;
 }
 
 .user-profile-card:hover {
@@ -222,11 +235,11 @@ page {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 12rpx 32rpx;
+  padding: 10rpx 28rpx;
   border-radius: 40rpx;
-  font-size: 28rpx;
+  font-size: 24rpx;
   font-weight: 500;
-  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4rpx 16rpx rgba(29, 29, 29, 0.3);
   transition: all 0.3s;
 }
 

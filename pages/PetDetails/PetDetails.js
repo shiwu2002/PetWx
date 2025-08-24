@@ -24,6 +24,13 @@ Page({
     // 新增点赞相关数据
     likeStates: {}, // 存储每个宠物的点赞状态
     likeCounts: {}, // 存储每个宠物的点赞数
+    // 新增评论相关数据
+    comments: [],
+    commentCount: 0,
+    commentContent: '',
+    replyContent: '',
+    showReplyId: null,
+    showCommentModal: false,
   },
 
   /**
@@ -31,10 +38,50 @@ Page({
    */
   onShow() {
     this.fetchPetList(); // 你原本用于加载宠物列表的方法
-    // 如果有宠物数据，加载点赞信息
+    // 加载用户ID
+    this.loadUserId();
+    // 如果有宠物数据，加载点赞信息和评论
     if (this.data.pet && this.data.pet.id) {
       this.loadLikeInfoForPet(this.data.pet.id);
+      this.fetchComments();
     }
+  },
+
+  // 加载用户ID
+  loadUserId() {
+    const that = this;
+    // 先检查全局是否已有userId
+    if (app.globalData.userId) {
+      that.setData({
+        userId: app.globalData.userId
+      });
+      return;
+    }
+
+    // 如果没有，尝试通过openid获取
+    wx.request({
+      url: getApp().globalData.MyUrl +`/selectByOpenidGetId/${app.globalData.openid || ''}`,
+      method: 'POST',
+      header: {
+        'token': app.globalData.token
+      },
+      success(res) {
+        if (res.data != null) {
+          // 有 userId
+          that.setData({
+            userId: res.data
+          });
+          // 同时保存到全局
+          app.globalData.userId = res.data;
+        } else {
+          // 没有 userId，但不跳转登录，而是在提交评论时处理
+          console.log('未获取到userId');
+        }
+      },
+      fail() {
+        console.error('获取userId失败');
+      }
+    });
   },
 
   // 加载指定宠物的点赞信息
@@ -202,6 +249,8 @@ Page({
     if (petId) {
       this.fetchPetList();
       this.fetchVaccineInfo(petId);
+      // 加载评论
+      this.fetchComments();
     }
   },
   
@@ -280,7 +329,27 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage() {
+    const { pet } = this.data;
+    if (!pet) return {};
 
+    // 设置分享内容
+    return {
+      title: `可爱的${pet.name}寻找新家`,
+      path: `/pages/PetDetails/PetDetails?petId=${pet.id}`,
+      imageUrl: pet.processedImageUrl || '/components/IMAGES/1293.jpg_wh860.png',
+      success: function(res) {
+        wx.showToast({
+          title: '分享成功',
+          icon: 'success'
+        });
+      },
+      fail: function(res) {
+        wx.showToast({
+          title: '分享失败',
+          icon: 'none'
+        });
+      }
+    };
   },
 
   onAdopt() {
@@ -486,12 +555,399 @@ Page({
     wx.navigateBack();
   },
 
+  // 切换评论弹窗显示/隐藏
+  toggleCommentModal() {
+    this.setData({
+      showCommentModal: !this.data.showCommentModal
+    });
+    // 如果显示弹窗，获取评论数据
+    if (this.data.showCommentModal) {
+      this.fetchComments();
+    }
+  },
+
+  // 阻止事件冒泡
+  stopPropagation() {
+    // 空函数，用于阻止事件冒泡
+  },
+
   // 分享宠物信息
   sharePet() {
     const { pet } = this.data;
+    console.log('分享按钮被点击，pet数据:', pet);
+    
+    if (!pet) {
+      wx.showToast({
+        title: '宠物信息未加载完成',
+        icon: 'none'
+      });
+      return;
+    }
+    
     wx.showShareMenu({
       withShareTicket: true,
-      menus: ['shareAppMessage', 'shareTimeline']
+      menus: ['shareAppMessage', 'shareTimeline'],
+      success: () => {
+        console.log('分享菜单显示成功');
+      },
+      fail: (err) => {
+        console.error('分享菜单显示失败:', err);
+        wx.showToast({
+          title: '分享功能异常',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 获取评论列表
+  fetchComments() {
+    const { petId } = this.data;
+    if (!petId) return;
+
+    wx.request({
+      url: getApp().globalData.MyUrl+ '/comment/list',
+      method: 'GET',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'token': app.globalData.token
+      },
+      data: {
+        targetId: petId,
+        targetType: 'pet'
+      },
+      success: (res) => {
+          console.log(res)
+        if (res.statusCode === 200 && res.data.code === 200) {
+          // 格式化评论数据，处理三级评论的平铺展示
+          const formattedComments = this.formatComments(res.data.data || []);
+          this.setData({
+            comments: formattedComments,
+            commentCount: res.data.data?.length || 0
+          });
+        } else {
+          wx.showToast({
+            title: '获取评论失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('获取评论失败:', err);
+        wx.showToast({
+          title: '网络错误，请重试',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 格式化评论数据，最多支持两层评论
+  formatComments(comments) {
+    // 首先构建评论ID到评论的映射
+    const commentMap = new Map();
+    comments.forEach(comment => {
+      // 处理缺少的字段
+      comment.replies = [];
+      comment.level = 0; // 初始化层级
+      comment.userName = comment.userName || '匿名用户';
+      comment.userAvatar = comment.userAvatar || '';
+
+      // 格式化日期
+      if (comment.createTime && Array.isArray(comment.createTime)) {
+        const [year, month, day, hour, minute, second] = comment.createTime;
+        comment.createTime = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+      } else {
+        comment.createTime = '刚刚';
+      }
+
+      commentMap.set(comment.id, comment);
+    });
+
+    // 分离一级评论和子评论
+    const level1Comments = [];
+    comments.forEach(comment => {
+      if (!comment.parentId || comment.parentId === 0) {
+        // 一级评论 (parentId为null、undefined或0)
+        comment.level = 1;
+        level1Comments.push(comment);
+      } else {
+        // 子评论
+        const parentComment = commentMap.get(comment.parentId);
+        if (parentComment) {
+          // 设置父评论用户名，用于@显示
+          comment.parentUserName = parentComment.userName;
+
+          // 计算当前评论的层级
+          comment.level = parentComment.level + 1;
+
+          // 检查是否超过两层
+          if (comment.level > 2) {
+            // 超过两层，找到最近的层级≤1的祖先
+            let ancestor = parentComment;
+            while (ancestor && ancestor.level > 1) {
+              ancestor = commentMap.get(ancestor.parentId);
+            }
+
+            // 如果找到了合适的祖先，则添加到其replies中
+            if (ancestor) {
+              ancestor.replies.push(comment);
+            }
+          } else {
+            // 未超过两层，直接添加到父评论的replies中
+            parentComment.replies.push(comment);
+          }
+        }
+      }
+    });
+
+    return level1Comments;
+  },
+
+  // 评论输入
+  onCommentInput(e) {
+    this.setData({
+      commentContent: e.detail.value
+    });
+  },
+
+  // 提交评论
+  submitComment() {
+    const { commentContent, petId } = this.data;
+    const userId = this.data.userId || app.globalData.userId || 1;
+
+    if (!commentContent.trim()) {
+      wx.showToast({
+        title: '请输入评论内容',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (!petId) {
+      wx.showToast({
+        title: '宠物ID不存在',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (!userId) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      });
+      wx.navigateTo({
+        url: '/pages/login/login'
+      });
+      return;
+    }
+
+    console.log(userId)
+    console.log(petId)
+    console.log(commentContent.trim())
+    console.log(app.globalData.token)
+    wx.request({
+      url: getApp().globalData.MyUrl+'/comment/add',
+      method: 'POST',
+      header: {
+        'content-type': 'application/json',
+        'token': app.globalData.token
+      },
+      data: {
+        targetId: petId,
+        targetType: 'pet',
+        userId: userId || app.globalData.userId || 1,
+        content: commentContent.trim(),
+        parentId: 0
+      },
+      success: (res) => {
+          console.log(res)
+        if (res.statusCode === 200 && res.data.code === 200) {
+          wx.showToast({
+            title: '评论成功',
+            icon: 'success'
+          });
+          // 清空评论输入框
+          this.setData({
+            commentContent: ''
+          });
+          // 重新获取评论列表
+          this.fetchComments();
+        } else {
+          wx.showToast({
+            title: res.data?.message || '评论失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('提交评论失败:', err);
+        wx.showToast({
+          title: '网络错误，请重试',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 显示回复框
+  showReplyBox(e) {
+    const { id, name } = e.currentTarget.dataset;
+    this.setData({
+      showReplyId: id,
+      replyContent: ''
+    });
+  },
+
+  // 隐藏回复框
+  hideReplyBox() {
+    this.setData({
+      showReplyId: null,
+      replyContent: ''
+    });
+  },
+
+  // 回复输入
+  onReplyInput(e) {
+    this.setData({
+      replyContent: e.detail.value
+    });
+  },
+
+  // 提交回复
+  submitReply(e) {
+    const { replyContent, petId, userId } = this.data;
+    const parentId = e.currentTarget.dataset.id;
+
+    if (!replyContent.trim()) {
+      wx.showToast({
+        title: '请输入回复内容',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (!petId) {
+      wx.showToast({
+        title: '宠物ID不存在',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (!userId) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      });
+      wx.navigateTo({
+        url: '/pages/login/login'
+      });
+      return;
+    }
+
+    if (!parentId) {
+      wx.showToast({
+        title: '回复对象不存在',
+        icon: 'none'
+      });
+      return;
+    }
+
+    wx.request({
+      url: getApp().globalData.MyUrl+'/comment/add',
+      method: 'POST',
+      header: {
+        'content-type': 'application/json',
+        'token': app.globalData.token
+      },
+      data: {
+        targetId: petId,
+        targetType: 'pet',
+        userId: userId || app.globalData.userId || 1,
+        content: replyContent.trim(),
+        parentId: parentId
+      },
+      success: (res) => {
+        if (res.statusCode === 200 && res.data.code === 200) {
+          wx.showToast({
+            title: '回复成功',
+            icon: 'success'
+          });
+          // 隐藏回复框
+          this.hideReplyBox();
+          // 重新获取评论列表
+          this.fetchComments();
+        } else {
+          wx.showToast({
+            title: res.data?.message || '回复失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('提交回复失败:', err);
+        wx.showToast({
+          title: '网络错误，请重试',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 删除评论
+  deleteComment(e) {
+    const commentId = e.currentTarget.dataset.id;
+    if (!commentId) {
+      wx.showToast({
+        title: '参数错误',
+        icon: 'none'
+      });
+      return;
+    }
+
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这条评论吗？',
+      success: (res) => {
+        if (res.confirm) {
+          wx.request({
+            url: getApp().globalData.MyUrl+'/comment/delete',
+            method: 'GET',
+            header: {
+              'content-type': 'application/x-www-form-urlencoded',
+              'token': app.globalData.token
+            },
+            data: {
+              id: commentId,
+              userId:getApp().globalData.userId
+            },
+            success: (res) => {
+              if (res.statusCode === 200 && res.data.code === 200) {
+                wx.showToast({
+                  title: '删除成功',
+                  icon: 'success'
+                });
+                // 重新获取评论列表
+                this.fetchComments();
+              } else {
+                wx.showToast({
+                  title: res.data?.message || '删除失败',
+                  icon: 'none'
+                });
+              }
+            },
+            fail: (err) => {
+              console.error('删除评论失败:', err);
+              wx.showToast({
+                title: '网络错误，请重试',
+                icon: 'none'
+              });
+            }
+          });
+        }
+      }
     });
   }
 })
