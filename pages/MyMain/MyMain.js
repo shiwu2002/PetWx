@@ -288,6 +288,32 @@ Page({
     }
   },
 
+  /**
+   * 退出登录
+   */
+  onLogout() {
+    wx.showModal({
+      title: '确认退出',
+      content: '确定要退出登录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          // 清除本地存储的用户数据
+          wx.removeStorageSync('openid');
+          wx.removeStorageSync('token');
+          
+          // 重置全局状态
+          app.globalData.openid = null;
+          app.globalData.token = null;
+          
+          // 跳转到登录页面
+          wx.redirectTo({
+            url: '/pages/login/login'
+          });
+        }
+      }
+    });
+  },
+
   onShowApply() {
     this.setData({ loading: true, error: '', applyData: [] });
     let openid = app.globalData.openid || wx.getStorageSync('openid');

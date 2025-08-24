@@ -1,26 +1,37 @@
 /* pages/SuppliesPet/SuppliesPet.wxss */
+page {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
 
 .container {
   padding-bottom: 80rpx;
-  background: #f7fafc;
+  background: transparent;
   min-height: 100vh;
 }
 .loading, .error, .empty {
   text-align: center;
-  color: #888;
+  color: #fff;
   font-size: 28rpx;
   margin: 40rpx 0;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.3);
 }
 .supply-item {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10rpx);
   border-radius: 24rpx;
-  box-shadow: 0 6rpx 24rpx rgba(72,187,120,0.10);
+  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.1);
   margin: 28rpx 32rpx 0 32rpx;
   padding: 32rpx 24rpx 24rpx 24rpx;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 10rpx;
+  transition: all 0.3s ease;
+}
+.supply-item:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 3rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 .supply-img {
   width: 100%;
@@ -29,7 +40,7 @@
   object-fit: cover;
   margin-bottom: 18rpx;
   background: #f2f2f2;
-  box-shadow: 0 2rpx 8rpx rgba(72,187,120,0.06);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
 }
 .supply-main-row {
   display: flex;
@@ -40,7 +51,7 @@
 .supply-name {
   font-size: 32rpx;
   font-weight: 700;
-  color: #222;
+  color: #2d3748;
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -51,28 +62,29 @@
   padding: 2rpx 10rpx;
   border-radius: 9999rpx;
   font-weight: 600;
-  background: rgba(72,187,120,0.10);
-  color: #38a169;
+  background: rgba(102, 126, 234, 0.10);
+  color: #667eea;
 }
 .supply-hot {
   font-size: 20rpx;
   padding: 2rpx 10rpx;
   border-radius: 9999rpx;
   font-weight: 600;
-  background: linear-gradient(90deg, #ffb347 60%, #ffcc80 100%);
-  color: #b45309;
+  background: linear-gradient(90deg, #667eea 60%, #764ba2 100%);
+  color: #fff;
   margin-left: 8rpx;
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.2);
 }
 .supply-meta-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 24rpx;
-  color: #666;
+  color: #718096;
   margin-bottom: 4rpx;
 }
 .supply-brand {
-  color: #888;
+  color: #718096;
 }
 .supply-price {
   color: #e53e3e;
@@ -81,40 +93,46 @@
 }
 .supply-desc-block {
   width: 100%;
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10rpx);
   border-radius: 12rpx;
   padding: 12rpx 14rpx;
   margin: 8rpx 0 0 0;
 }
 .supply-desc {
   font-size: 24rpx;
-  color: #888;
+  color: #4a5568;
   line-height: 1.7;
 }
 .detail-btn {
   margin-top: 16rpx;
   width: 100%;
   height: 64rpx;
-  background: linear-gradient(90deg, #48bb78 60%, #42b983 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
   border: none;
   border-radius: 16rpx;
   font-size: 28rpx;
   font-weight: 700;
-  box-shadow: 0 2rpx 8rpx rgba(72,187,120,0.10);
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+.detail-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 1rpx 4rpx rgba(102, 126, 234, 0.3);
 }
 
 /* 加载更多相关样式 */
 .loading-more, .no-more {
   text-align: center;
-  color: #888;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 24rpx;
   margin: 40rpx 0;
   padding: 20rpx 0;
 }
 .loading-more {
-  color: #48bb78;
+  color: #fff;
 }
 .no-more {
-  color: #999;
+  color: rgba(255, 255, 255, 0.5);
 }

@@ -2,11 +2,11 @@
 <view class="container">
   <!-- 宠物图片轮播 -->
   <view class="pet-image-section" wx:if="{{pet}}">
-    <swiper class="image-swiper" indicator-dots="{{true}}" autoplay="{{true}}" interval="5000" duration="500">
-      <swiper-item wx:for="{{pet.images || [pet.processedImageUrl]}}" wx:key="*this">
-        <image class="pet-image" src="{{item || '/components/IMAGES/1293.jpg_wh860.jpg'}}" mode="aspectFill" />
-      </swiper-item>
-    </swiper>
+      <swiper class="image-swiper" indicator-dots="{{true}}" autoplay="{{true}}" interval="5000" duration="500">
+        <swiper-item wx:for="{{(pet.images && pet.images.length > 0) ? pet.images : [pet.processedImageUrl]}}" wx:key="*this">
+          <image class="pet-image" src="{{item}}" mode="aspectFill" binderror="onImageError" data-index="{{index}}" />
+        </swiper-item>
+      </swiper>
     <view class="image-overlay">
       <view class="back-btn" bindtap="goBack">
         <text class="back-icon">‹</text>
@@ -22,6 +22,13 @@
     <view class="pet-header">
       <view class="pet-title-section">
         <text class="pet-name">{{pet.name}}</text>
+        <!-- 点赞区域 -->
+        <view class="like-section" catchtap="toggleLike" data-target-id="{{pet.id}}">
+          <view class="like-icon {{likeStates[pet.id] ? 'liked' : ''}}">
+            {{likeStates[pet.id] ? '❤️' : '🤍'}}
+          </view>
+          
+        </view>
         <view class="pet-badges">
           <view class="status-badge {{pet.isAdopt === '待领养' ? 'adoptable' : 'adopted'}}">
             <text class="badge-text">{{pet.isAdopt}}</text>

@@ -13,6 +13,12 @@
         </view>
       </block>
     </view>
+    <view class="nav-footer">
+      <view class="logout-btn" bindtap="onLogout">
+        <view class="nav-icon">🚪</view>
+        <text class="nav-label">退出登录</text>
+      </view>
+    </view>
   </view>
 
   <!-- 右侧内容区 -->
@@ -28,9 +34,6 @@
         <view class="profile-header">
           <view class="avatar-section">
             <image class="avatar" src="{{userInfo.avatarUrl || '/components/IMAGES/Discover.png'}}" mode="aspectFill" bindtap="onChooseAvatar"/>
-            <view class="avatar-overlay">
-              <text class="avatar-text">点击更换</text>
-            </view>
           </view>
           <view class="user-info">
             <text class="nickname">{{userInfo.nickName || '未登录'}}</text>

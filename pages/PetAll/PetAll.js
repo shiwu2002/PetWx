@@ -298,34 +298,42 @@ Page({
       currentPage: 1,
       processedPets: [],
       hasMore: true
-    }, () => {
-      const requestData = {
-        size: this.data.pageSize,
-        current: 1,
-        name: "", 
-        breed: searchKeyword,
-        healthStatus: "",
-        isAdopt: "待领养"
-      };
-      this.loadPetsData(1, requestData); 
     });
+    
+    // 构建搜索请求数据
+    const requestData = {
+      size: this.data.pageSize,
+      current: 1,
+      name: searchKeyword,
+      breed: "",
+      healthStatus: "",
+      isAdopt: "待领养"
+    };
+    
+    this.loadPetsData(1, requestData);
   },
-
+  
+  // 处理宠物卡片点击事件
+  handlePetClick: function(e) {
+    const petId = e.currentTarget.dataset.id;
+    if (petId) {
+      // 导航到宠物详情页面，并传递petId参数
+      wx.navigateTo({
+        url: `/pages/PetDetails/PetDetails?petId=${petId}`
+      });
+    } else {
+      wx.showToast({ title: '参数错误', icon: 'none' });
+    }
+  },
+  
   // 加载更多宠物数据
-  loadMorePets: function () {
+  loadMorePets: function() {
     if (this.data.loading || !this.data.hasMore) return;
+    
     const nextPage = this.data.currentPage + 1;
     this.loadPetsData(nextPage);
   },
-
-  // 宠物卡片点击事件
-  handlePetClick: function (e) {
-    const petId = e.currentTarget.dataset.id;
-    wx.navigateTo({
-      url: `/pages/petDetail/petDetail?id=${petId}`
-    });
-  },
-
+  
   // 图片加载错误处理
   handleImageError(e) {
     console.error('图片加载失败：', e.detail);
