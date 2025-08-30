@@ -2,11 +2,46 @@
 <view class="container">
   <!-- 宠物图片轮播 -->
   <view class="pet-image-section" wx:if="{{pet}}">
-      <swiper class="image-swiper" indicator-dots="{{true}}" autoplay="{{true}}" interval="5000" duration="500">
-        <swiper-item wx:for="{{(pet.images && pet.images.length > 0) ? pet.images : [pet.processedImageUrl]}}" wx:key="*this">
-          <image class="pet-image" src="{{item}}" mode="aspectFill" binderror="onImageError" data-index="{{index}}" />
-        </swiper-item>
-      </swiper>
+    <swiper 
+      class="image-swiper" 
+      indicator-dots="{{getImageCount() > 1}}" 
+      indicator-color="rgba(255, 255, 255, 0.5)"
+      indicator-active-color="#ffffff"
+      autoplay="{{getImageCount() > 1}}" 
+      interval="5000" 
+      duration="500"
+      bindchange="onSwiperChange"
+      circular="{{getImageCount() > 1}}"
+      current="{{currentImageIndex}}"
+    >
+      <swiper-item wx:for="{{(pet.images && pet.images.length > 0) ? pet.images : [pet.processedImageUrl]}}" wx:key="*this">
+        <image 
+          class="pet-image" 
+          src="{{item}}" 
+          mode="aspectFill" 
+          binderror="onImageError" 
+          bindtap="previewImages"
+          data-index="{{index}}"
+          lazy-load="true"
+        />
+      </swiper-item>
+    </swiper>
+    
+    <!-- 左右箭头按钮 -->
+    <view class="swiper-nav" wx:if="{{getImageCount() > 1}}">
+      <view class="nav-btn nav-prev" bindtap="prevImage" catchtap="stopPropagation">
+        <text class="nav-icon">❮</text>
+      </view>
+      <view class="nav-btn nav-next" bindtap="nextImage" catchtap="stopPropagation">
+        <text class="nav-icon">❯</text>
+      </view>
+    </view>
+    
+    <!-- 图片计数器 -->
+    <view class="image-counter" wx:if="{{getImageCount() > 1}}">
+      <text class="counter-text">{{currentImageIndex + 1}}/{{getImageCount()}}</text>
+    </view>
+    
     <view class="image-overlay">
       <view class="back-btn" bindtap="goBack">
         <text class="back-icon">‹</text>
@@ -14,6 +49,11 @@
       <view class="share-btn" bindtap="sharePet">
         <text class="share-icon">📤</text>
       </view>
+    </view>
+    
+    <!-- 轮播提示 -->
+    <view class="swipe-hint" wx:if="{{getImageCount() > 1}}">
+      <text class="hint-text">滑动或点击箭头查看更多图片</text>
     </view>
   </view>
 

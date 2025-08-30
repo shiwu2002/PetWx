@@ -1,11 +1,14 @@
 // pages/MyMain/MyMain.js
 const app = getApp();
-Page({
 
+Page({
   /**
    * 页面的初始数据
    */
   data: {
+    likeList: [],
+    loading: true,
+    error: false,
     userInfo: {
       avatarUrl: '',
       nickName: '',
@@ -19,13 +22,10 @@ Page({
     editNickName: '',
     editPhone: '',
     selectedNav: 'profile', // 'profile' | 'myApply' | 'myDiscover' | 'myLike'
-    loading: false,
-    error: '',
     applyData: [],
     applyDataPreviewUrls: [],
     myDiscoverData: [],
     myDiscoverPreviewUrls: [],
-    myLikeData: [],
     // 侧边栏链表
     sideNavList: [
       { key: 'profile', label: '个人信息' },
@@ -33,6 +33,95 @@ Page({
       { key:'myDiscover',label:'救助信息'},
       { key:'myLike',label:'我的喜欢'}
     ]
+  },
+
+  // 加载用户喜欢列表
+  loadUserLikes: function() {
+    this.setData({ loading: true, error: false });
+    const userId = app.globalData.userId || 1; // 从全局获取用户ID
+
+    wx.request({
+      url: `http://localhost:8080/like/getLikeByUserId?userId=${userId}`,
+      method: 'GET',
+      header: {
+          'token': getApp().globalData.token
+        },
+      success: (res) => {
+          console.log('喜欢列表数据:', res)
+        this.setData({ loading: false });
+        if (res.data && res.data.code === 200 && res.data.data) {
+          // 处理图片拼接和数据格式化
+         const formattedLikes = res.data.data.filter(item => {
+           // 过滤掉无效数据
+           if (item.targetType === 'pet') {
+             return item.petsPet && item.petsPet.id && item.petsPet.name;
+           } else if (item.targetType === 'supper') {
+             return item.supplies && item.supplies.id && item.supplies.productName;
+           }
+           return false;
+         }).map(item => {
+           let imageUrl = '/components/IMAGES/default.png'; // 默认图片
+           let title = '';
+           let subtitle = '';
+           let type = item.targetType;
+           let extraInfo = ''; // 额外信息
+            
+           // 根据类型处理不同数据
+           if (type === 'pet' && item.petsPet) {
+             const pet = item.petsPet;
+             title = pet.name || '未知宠物';
+             subtitle = `${pet.breed || '未知品种'} · ${pet.age || 0}岁 · ${pet.gender || '未知'}`;
+             extraInfo = `${pet.location || '位置未知'} · ${pet.isAdopt || '状态未知'}`;
+             
+             // 宠物图片处理
+             if (pet.images && Array.isArray(pet.images) && pet.images.length > 0) {
+               let petImage = pet.images[0];
+               imageUrl = petImage.includes('http') ? petImage : getApp().globalData.NodeUrl + petImage;
+             }
+           } else if (type === 'supper' && item.supplies) {
+             const supply = item.supplies;
+             title = supply.productName || '未知商品';
+             subtitle = `${supply.brand || '未知品牌'} · ¥${(supply.price || 0).toFixed(2)}`;
+             extraInfo = `品种：  ${supply.category || '未分类'}`;
+             
+             // 用品图片处理
+             if (supply.imageUrl) {
+               imageUrl = supply.imageUrl.includes('http') ? supply.imageUrl : getApp().globalData.NodeUrl + supply.imageUrl;
+             }
+           }
+            
+           // 格式化时间
+           const createTime = new Date(...item.createTime).toLocaleString('zh-CN', {
+             year: 'numeric',
+             month: '2-digit', 
+             day: '2-digit',
+             hour: '2-digit',
+             minute: '2-digit'
+           });
+            
+           return {
+             ...item,
+             title,
+             subtitle,
+             extraInfo,
+             imageUrl,
+             createTime,
+             displayType: type === 'pet' ? '宠物' : '用品'
+           };
+         });
+         
+         console.log('处理后的数据:', formattedLikes);
+         this.setData({ likeList: formattedLikes });
+        } else {
+          this.setData({ error: true, likeList: [] });
+          wx.showToast({ title: '获取喜欢列表失败', icon: 'none' });
+        }
+      },
+      fail: () => {
+        this.setData({ loading: false, error: true, likeList: [] });
+        wx.showToast({ title: '网络请求失败', icon: 'none' });
+      }
+    });
   },
 
   /**
@@ -289,54 +378,8 @@ Page({
       this.onShowMyDiscover();
     }
     if (nav === 'myLike') {
-      this.onShowMyLike();
+      this.loadUserLikes();
     }
-  },
-
-  // 获取我的喜欢数据
-  onShowMyLike() {
-    this.setData({ loading: true, error: '', myLikeData: [] });
-    const userId = app.globalData.userId || 1; // 这里使用默认值1作为示例
-    
-    wx.request({
-      url: 'http://localhost:8080/like/getLikeByUserId?userId=' + userId,
-      method: 'GET',
-      success: (res) => {
-        if (res.data && res.data.code === 200 && res.data.data) {
-          this.setData({ 
-            myLikeData: res.data.data, 
-            loading: false 
-          });
-        } else {
-          this.setData({ 
-            error: res.data.message || '未查询到喜欢数据', 
-            loading: false 
-          });
-        }
-      },
-      fail: () => {
-        this.setData({ 
-          error: '获取喜欢数据失败', 
-          loading: false 
-        });
-      }
-    });
-  },
-
-  // 查看宠物详情
-  onViewPetDetail(e) {
-    const petId = e.currentTarget.dataset.id;
-    wx.navigateTo({
-      url: `/pages/PetDetails/PetDetails?id=${petId}`
-    });
-  },
-
-  // 查看用品详情
-  onViewSuppliesDetail(e) {
-    const suppliesId = e.currentTarget.dataset.id;
-    wx.navigateTo({
-      url: `/pages/SuppliesDetail/SuppliesDetail?id=${suppliesId}`
-    });
   },
 
   /**
@@ -468,5 +511,24 @@ Page({
         this.setData({ myDiscoverData: [], myDiscoverPreviewUrls: [] });
       }
     });
+  },
+
+  // 跳转到详情页
+  navigateToDetail: function(e) {
+    const type = e.currentTarget.dataset.type;
+    const id = e.currentTarget.dataset.id;
+    let url = '';
+    
+    if (type === 'pet') {
+      url = `/pages/PetDetails/PetDetails?id=${id}`;
+    } else if (type === 'supper') {
+      url = `/pages/SuppliesDetail/SuppliesDetail?id=${id}`;
+    }
+    
+    if (url) {
+      wx.navigateTo({
+        url: url
+      });
+    }
   }
-})
+});

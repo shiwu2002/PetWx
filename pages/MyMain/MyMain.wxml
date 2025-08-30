@@ -203,7 +203,7 @@
         </view>
       </block>
     </block>
-<block>
+
     <!-- 补充信息弹窗 -->
     <view wx:if="{{showEditModal}}" class="modal-mask" bindtap="closeEditModal">
       <view class="modal" catchtap="stopPropagation">
@@ -230,13 +230,11 @@
         </view>
       </view>
     </view>
-    </block>
 
     <!-- 我的喜欢内容 -->
     <block wx:if="{{selectedNav === 'myLike'}}">
       <view class="content-header">
         <text class="content-title">我的喜欢</text>
-        <text class="content-subtitle">查看您收藏的宠物和用品</text>
       </view>
       
       <view wx:if="{{loading}}" class="loading-state">
@@ -246,97 +244,43 @@
       
       <view wx:elif="{{error}}" class="error-state">
         <view class="error-icon">⚠️</view>
-        <text class="error-text">{{error}}</text>
-        <button class="retry-btn" bindtap="onShowMyLike">
+        <text class="error-text">获取喜欢列表失败</text>
+        <button class="retry-btn" bindtap="loadUserLikes">
           <text class="btn-text">重试</text>
         </button>
       </view>
       
-      <block wx:elif="{{myLikeData && myLikeData.length}}">
+      <block wx:elif="{{likeList && likeList.length > 0}}">
         <view class="like-list">
-          <block wx:for="{{myLikeData}}" wx:key="id">
-            <!-- 宠物卡片 -->
-            <view class="like-card" wx:if="{{item.targetType === 'pet'}}" data-id="{{item.petsPet.id}}" bindtap="onViewPetDetail">
+          <block wx:for="{{likeList}}" wx:key="id">
+            <view class="like-card" bindtap="navigateToDetail" data-type="{{item.targetType}}" data-id="{{item.targetId}}">
               <view class="card-header">
-                <image class="card-image" src="{{item.petsPet.images ? (getApp().globalData.NodeUrl + item.petsPet.images) : '/components/IMAGES/pet.png'}}" mode="aspectFill"/>
+                <image class="card-image" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="true"/>
                 <view class="card-info">
-                  <text class="card-title">{{item.petsPet.name}}</text>
-                  <view class="card-type-badge">
-                    <text class="badge-text">宠物</text>
+                  <text class="card-title">{{item.title}}</text>
+                  <view class="card-type-badge" data-type="{{item.targetType}}">
+                    <text class="badge-text">{{item.displayType}}</text>
+                  </view>
+                  <view class="card-subtitle">
+                    <text class="subtitle-text">{{item.subtitle}}</text>
                   </view>
                 </view>
               </view>
               
               <view class="card-content">
-                <view class="info-grid">
-                  <view class="info-item">
-                    <text class="info-label">品种</text>
-                    <text class="info-value">{{item.petsPet.breed}}</text>
-                  </view>
-                  <view class="info-item">
-                    <text class="info-label">年龄</text>
-                    <text class="info-value">{{item.petsPet.age}}岁</text>
-                  </view>
-                  <view class="info-item">
-                    <text class="info-label">性别</text>
-                    <text class="info-value">{{item.petsPet.gender}}</text>
-                  </view>
-                  <view class="info-item">
-                    <text class="info-label">状态</text>
-                    <text class="info-value">{{item.petsPet.isAdopt}}</text>
-                  </view>
+                <view class="card-extra-info">
+                  <text class="extra-info-text">{{item.extraInfo}}</text>
                 </view>
                 
-                <view class="card-desc">
-                  <text class="desc-text">{{item.petsPet.description}}</text>
-                </view>
-                
-                <view class="card-location">
-                  <text class="location-icon">📍</text>
-                  <text class="location-text">{{item.petsPet.location}}</text>
-                </view>
-              </view>
-            </view>
-            
-            <!-- 用品卡片 -->
-            <view class="like-card" wx:elif="{{item.targetType === 'supper'}}" data-id="{{item.supplies.id}}" bindtap="onViewSuppliesDetail">
-              <view class="card-header">
-                <image class="card-image" src="{{item.supplies.imageUrl ? (app.globalData.NodeUrl + item.supplies.imageUrl) : '/components/IMAGES/supper.png'}}" mode="aspectFill"/>
-                <view class="card-info">
-                  <text class="card-title">{{item.supplies.productName}}</text>
-                  <view class="card-type-badge">
-                    <text class="badge-text">用品</text>
+                <view class="card-footer">
+                  <view class="card-time">
+                    <text class="time-icon">📅</text>
+                    <text class="time-text"> {{item.createTime}}</text>
                   </view>
-                </view>
-              </view>
-              
-              <view class="card-content">
-                <view class="info-grid">
-                  <view class="info-item">
-                    <text class="info-label">品牌</text>
-                    <text class="info-value">{{item.supplies.brand}}</text>
+                  <view class="card-action">
+                    <text class="action-text">点击查看</text>
+                    <text class="action-arrow">›</text>
                   </view>
-                  <view class="info-item">
-                    <text class="info-label">价格</text>
-                    <text class="info-value price">¥{{item.supplies.price.toFixed(2)}}</text>
-                  </view>
-                  <view class="info-item">
-                    <text class="info-label">分类</text>
-                    <text class="info-value">{{item.supplies.category}}</text>
-                  </view>
-                  <view class="info-item">
-                    <text class="info-label">评分</text>
-                    <text class="info-value">{{item.supplies.rating}}分</text>
-                  </view>
-                </view>
-                
-                <view class="card-desc">
-                  <text class="desc-text">{{item.supplies.description}}</text>
-                </view>
-                
-                <view class="card-stock">
-                  <text class="stock-icon">📦</text>
-                  <text class="stock-text">库存: {{item.supplies.stockQuantity}}件</text>
                 </view>
               </view>
             </view>
@@ -346,8 +290,8 @@
       
       <view wx:else class="empty-state">
         <view class="empty-icon">❤️</view>
-        <text class="empty-text">暂无喜欢内容</text>
-        <text class="empty-desc">您还没有收藏任何宠物或用品</text>
+        <text class="empty-text">暂无喜欢的内容</text>
+        <text class="empty-desc">快去浏览并收藏喜欢的宠物或用品吧~</text>
       </view>
     </block>
   </view>

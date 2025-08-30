@@ -31,6 +31,10 @@ Page({
     replyContent: '',
     showReplyId: null,
     showCommentModal: false,
+    // 轮播相关数据
+    currentImageIndex: 0,
+    showImagePreview: false,
+    previewImageList: [],
   },
 
   /**
@@ -479,17 +483,39 @@ Page({
             
             // 处理pet图片URL
             let processedImageUrl = null;
+            let processedImages = [];
             const nodeUrl = getApp().globalData.NodeUrl;
             
-            // 优先从数据中获取图片路径并与NodeUrl拼接
+            // 处理图片数据：支持数组中逗号分隔的字符串格式
             if (petData.images && petData.images.length > 0) {
-              // 处理所有图片路径，与NodeUrl拼接
-              petData.images = petData.images.map(image => {
-                // 确保URL格式正确，避免双斜杠
-                const normalizedImage = image.replace(/^\//, ''); // 移除开头的斜杠
-                return nodeUrl.replace(/\/$/, '') + '/' + normalizedImage; // 避免双斜杠问题
+              // 遍历图片数组，处理每个元素
+              petData.images.forEach(imageItem => {
+                if (typeof imageItem === 'string' && imageItem.trim()) {
+                  // 如果图片项包含逗号，则拆分成多个图片
+                  if (imageItem.includes(',')) {
+                    const splitImages = imageItem.split(',').map(img => img.trim()).filter(img => img);
+                    splitImages.forEach(img => {
+                      // 确保URL格式正确，避免双斜杠
+                      const normalizedImage = img.replace(/^\//, ''); // 移除开头的斜杠
+                      const fullUrl = nodeUrl.replace(/\/$/, '') + '/' + normalizedImage;
+                      processedImages.push(fullUrl);
+                    });
+                  } else {
+                    // 单个图片地址
+                    const normalizedImage = imageItem.replace(/^\//, '');
+                    const fullUrl = nodeUrl.replace(/\/$/, '') + '/' + normalizedImage;
+                    processedImages.push(fullUrl);
+                  }
+                }
               });
-              processedImageUrl = petData.images[0];
+              
+              // 更新petData的images为处理后的图片数组
+              petData.images = processedImages;
+              
+              // 设置第一张图片作为主图
+              if (processedImages.length > 0) {
+                processedImageUrl = processedImages[0];
+              }
             }
             
             // 如果没有有效图片路径，使用默认图片
@@ -509,7 +535,8 @@ Page({
 
             this.setData({
               pet: petData,
-              vaccineLoading: false
+              vaccineLoading: false,
+              currentImageIndex: 0 // 初始化轮播索引
             });
             console.log('fetchPetList中pet信息已设置:', this.data.pet);
             this.loadLikeInfoForPet(petData.id);
@@ -546,7 +573,7 @@ Page({
     // 替换为默认图片
     const defaultImage = '/components/IMAGES/1293.jpg_wh860.png';
     
-    if (pet.images.length > 0) {
+    if (pet.images.length > 0 && index !== undefined && pet.images[index]) {
       // 如果有images数组，替换对应索引的图片
       pet.images[index] = defaultImage;
     } else {
@@ -556,6 +583,8 @@ Page({
     
     // 更新数据
     this.setData({ pet });
+    
+    console.log(`图片加载失败，已替换为默认图片，索引: ${index}`);
   },
 
   // 返回上一页
@@ -974,6 +1003,84 @@ Page({
           });
         }
       }
+    });
+  },
+
+  // 轮播图变化事件
+  onSwiperChange(e) {
+    this.setData({
+      currentImageIndex: e.detail.current
+    });
+  },
+
+  // 点击图片预览
+  previewImages(e) {
+    const { pet } = this.data;
+    if (!pet) return;
+
+    // 获取图片列表
+    let imageList = [];
+    if (pet.images && pet.images.length > 0) {
+      imageList = pet.images;
+    } else if (pet.processedImageUrl) {
+      imageList = [pet.processedImageUrl];
+    }
+
+    if (imageList.length === 0) return;
+
+    // 获取当前点击的图片索引
+    const currentIndex = e.currentTarget.dataset.index || this.data.currentImageIndex || 0;
+
+    // 使用微信小程序的图片预览功能
+    wx.previewImage({
+      current: imageList[currentIndex],
+      urls: imageList,
+      fail: (err) => {
+        console.error('图片预览失败:', err);
+        wx.showToast({
+          title: '图片预览失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 获取图片总数
+  getImageCount() {
+    const { pet } = this.data;
+    if (!pet) return 0;
+    
+    if (pet.images && pet.images.length > 0) {
+      return pet.images.length;
+    } else if (pet.processedImageUrl) {
+      return 1;
+    }
+    return 0;
+  },
+
+  // 上一张图片
+  prevImage() {
+    const { currentImageIndex } = this.data;
+    const imageCount = this.getImageCount();
+    
+    if (imageCount <= 1) return;
+    
+    const newIndex = currentImageIndex === 0 ? imageCount - 1 : currentImageIndex - 1;
+    this.setData({
+      currentImageIndex: newIndex
+    });
+  },
+
+  // 下一张图片
+  nextImage() {
+    const { currentImageIndex } = this.data;
+    const imageCount = this.getImageCount();
+    
+    if (imageCount <= 1) return;
+    
+    const newIndex = currentImageIndex === imageCount - 1 ? 0 : currentImageIndex + 1;
+    this.setData({
+      currentImageIndex: newIndex
     });
   }
 })

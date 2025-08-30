@@ -270,6 +270,157 @@ page {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.pet-image:active {
+  transform: scale(1.02);
+}
+
+/* 图片计数器 */
+.image-counter {
+  position: absolute;
+  top: 24rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10rpx);
+  color: #ffffff;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  z-index: 10;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
+}
+
+.counter-text {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+/* 轮播提示 */
+.swipe-hint {
+  position: absolute;
+  bottom: 100rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10rpx);
+  color: #ffffff;
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+  font-size: 22rpx;
+  opacity: 0.8;
+  animation: fadeInOut 3s ease-in-out infinite;
+  z-index: 10;
+}
+
+.hint-text {
+  color: #ffffff;
+  font-size: 22rpx;
+}
+
+/* 左右箭头导航按钮 */
+.swiper-nav {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24rpx;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.nav-btn {
+  width: 80rpx;
+  height: 80rpx;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10rpx);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  pointer-events: all;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
+}
+
+.nav-btn:active {
+  transform: scale(0.95);
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.nav-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.05);
+}
+
+.nav-icon {
+  font-size: 36rpx;
+  color: #ffffff;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.nav-prev {
+  animation: slideInLeft 0.5s ease;
+}
+
+.nav-next {
+  animation: slideInRight 0.5s ease;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.9; }
+}
+
+/* 优化 swiper 的指示器样式 */
+.image-swiper .wx-swiper-dots {
+  bottom: 30rpx;
+}
+
+.image-swiper .wx-swiper-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  margin: 0 6rpx;
+  transition: all 0.3s ease;
+}
+
+.image-swiper .wx-swiper-dot-active {
+  width: 24rpx;
+  border-radius: 6rpx;
+  background: #ffffff;
+  transform: scale(1.1);
 }
 
 .image-overlay {
@@ -930,6 +1081,32 @@ page {
   .back-btn, .share-btn {
     width: 72rpx;
     height: 72rpx;
+  }
+  
+  .image-counter {
+    top: 20rpx;
+    padding: 6rpx 16rpx;
+    font-size: 22rpx;
+  }
+  
+  .swipe-hint {
+    bottom: 80rpx;
+    padding: 6rpx 12rpx;
+    font-size: 20rpx;
+  }
+  
+  /* 移动端箭头按钮样式 */
+  .swiper-nav {
+    padding: 0 16rpx;
+  }
+  
+  .nav-btn {
+    width: 64rpx;
+    height: 64rpx;
+  }
+  
+  .nav-icon {
+    font-size: 28rpx;
   }
   
   .pet-info-card {
