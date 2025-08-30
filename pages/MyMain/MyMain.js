@@ -18,18 +18,20 @@ Page({
     showServiceModal: false,
     editNickName: '',
     editPhone: '',
-    selectedNav: 'profile', // 'profile' | 'myApply' | 'myDiscover'
+    selectedNav: 'profile', // 'profile' | 'myApply' | 'myDiscover' | 'myLike'
     loading: false,
     error: '',
     applyData: [],
     applyDataPreviewUrls: [],
     myDiscoverData: [],
     myDiscoverPreviewUrls: [],
+    myLikeData: [],
     // 侧边栏链表
     sideNavList: [
       { key: 'profile', label: '个人信息' },
       { key: 'myApply', label: '我的预约' },
-      { key:'myDiscover',label:'救助信息'}
+      { key:'myDiscover',label:'救助信息'},
+      { key:'myLike',label:'我的喜欢'}
     ]
   },
 
@@ -53,7 +55,7 @@ Page({
             const user = res.data.data;
             let avatarUrl = user.avatar || '';
             if (avatarUrl && !/^http/.test(avatarUrl)) {
-              avatarUrl = getApp().globalData.NodeUrl + '/photo' + avatarUrl;
+              avatarUrl = getApp().globalData.NodeUrl + avatarUrl;
             }
             this.setData({
               userInfo: {
@@ -286,6 +288,55 @@ Page({
     if (nav === 'myDiscover') {
       this.onShowMyDiscover();
     }
+    if (nav === 'myLike') {
+      this.onShowMyLike();
+    }
+  },
+
+  // 获取我的喜欢数据
+  onShowMyLike() {
+    this.setData({ loading: true, error: '', myLikeData: [] });
+    const userId = app.globalData.userId || 1; // 这里使用默认值1作为示例
+    
+    wx.request({
+      url: 'http://localhost:8080/like/getLikeByUserId?userId=' + userId,
+      method: 'GET',
+      success: (res) => {
+        if (res.data && res.data.code === 200 && res.data.data) {
+          this.setData({ 
+            myLikeData: res.data.data, 
+            loading: false 
+          });
+        } else {
+          this.setData({ 
+            error: res.data.message || '未查询到喜欢数据', 
+            loading: false 
+          });
+        }
+      },
+      fail: () => {
+        this.setData({ 
+          error: '获取喜欢数据失败', 
+          loading: false 
+        });
+      }
+    });
+  },
+
+  // 查看宠物详情
+  onViewPetDetail(e) {
+    const petId = e.currentTarget.dataset.id;
+    wx.navigateTo({
+      url: `/pages/PetDetails/PetDetails?id=${petId}`
+    });
+  },
+
+  // 查看用品详情
+  onViewSuppliesDetail(e) {
+    const suppliesId = e.currentTarget.dataset.id;
+    wx.navigateTo({
+      url: `/pages/SuppliesDetail/SuppliesDetail?id=${suppliesId}`
+    });
   },
 
   /**
@@ -342,9 +393,9 @@ Page({
               if (res2.data && res2.data.code === 200 && res2.data.data) {
                 let applyList = Array.isArray(res2.data.data) ? res2.data.data : [res2.data.data];
                 // 拼接图片完整URL
-                const MyUrl = app.globalData.MyUrl;
+                const MyUrl = app.globalData.NodeUrl;
                 const applyDataPreviewUrls = applyList.map(item => {
-                  let previewUrl = item.petImage ? (MyUrl + '/photo' + item.petImage) : '/components/IMAGES/Discover.png';
+                  let previewUrl = item.petImage ? (MyUrl + item.petImage) : '/components/IMAGES/Discover.png';
                   return previewUrl;
                 });
                 this.setData({ applyData: applyList, applyDataPreviewUrls: applyDataPreviewUrls, loading: false });
@@ -403,7 +454,7 @@ Page({
               imgArr = urls.map(url => {
                 url = url.replace(/^"|"$/g, ''); // 去除首尾引号
                 if (/^http/.test(url)) return url;
-                return MyUrl + '/photo' + url;
+                return MyUrl + url;
               });
             }
             return imgArr;

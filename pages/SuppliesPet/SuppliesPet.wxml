@@ -6,19 +6,28 @@
   <block wx:for="{{suppliesList}}" wx:key="id">
     <view class="supply-item">
       <image class="supply-img" src="{{item.imageUrl}}" mode="aspectFill" />
-      <view class="supply-main-row">
-        <text class="supply-name">{{item.productName}}</text>
-        <text class="supply-category">{{item.category}}</text>
-        <text wx:if="{{item.isHot == 1}}" class="supply-hot">热销</text>
+      <view class="card-content">
+        <view class="supply-main-row">
+          <text class="supply-name">{{item.productName}}</text>
+          <text class="supply-category">{{item.category}}</text>
+          <text wx:if="{{item.isHot == 1}}" class="supply-hot">热销</text>
+        </view>
+        <view class="supply-meta-row">
+          <text class="supply-name">{{item.name}}</text>
+          <view class="like-section" catchtap="toggleLike" data-target-id="{{item.id}}">
+            <view class="like-icon {{likeStates[item.id] ? 'liked' : ''}}">
+              {{likeStates[item.id] ? '❤️' : '🤍'}}
+            </view>
+            <view class="like-count">{{likeCounts[item.id] || 0}}</view>
+          </view>
+        </view>
+        <view class="supply-desc-block">
+          <text class="supply-desc">{{item.description}}</text>
+        </view>
+        <view class="action-container">
+          <button class="detail-btn" data-id="{{item.id}}" bindtap="goToDetail">查看详情</button>
+        </view>
       </view>
-      <view class="supply-meta-row">
-        <text class="supply-brand">品牌：{{item.brand}}</text>
-        <text class="supply-price">￥{{item.price}}</text>
-      </view>
-      <view class="supply-desc-block">
-        <text class="supply-desc">{{item.description}}</text>
-      </view>
-      <button class="detail-btn" data-id="{{item.id}}" bindtap="goToDetail">查看详情</button>
     </view>
   </block>
   <!-- 加载更多提示 -->

@@ -25,9 +25,12 @@ page {
   padding: 32rpx 24rpx 24rpx 24rpx;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 10rpx;
   transition: all 0.3s ease;
+}
+.card-content {
+  width: 100%;
 }
 .supply-item:active {
   transform: translateY(2rpx);
@@ -104,13 +107,21 @@ page {
   color: #4a5568;
   line-height: 1.7;
 }
-.detail-btn {
-  margin-top: 16rpx;
-  width: 100%;
-  height: 64rpx;
+.action-container {
+  text-align: center !important;
+  width: 100% !important;
+  padding: 16rpx 0 0;
+  height: auto;
+}
+
+wx-button.detail-btn {
+  display: inline-block !important;
+  width: 280rpx !important;
+  height: 64rpx !important;
+  padding: 0 !important;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
-  border: none;
+  border: none !important;
   border-radius: 16rpx;
   font-size: 28rpx;
   font-weight: 700;
@@ -135,4 +146,41 @@ page {
 }
 .no-more {
   color: rgba(255, 255, 255, 0.5);
+}
+
+/* 点赞区域样式 */
+.like-section {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  margin-left: auto;
+  margin-right: 0;
+  padding: 4rpx 12rpx;
+  background: transparent;
+  border-radius: 30rpx;
+}
+
+.like-icon {
+  font-size: 30rpx;
+  transition: all 0.3s ease;
+  vertical-align: middle;
+}
+
+.like-icon.liked {
+  color: #e53e3e;
+  transform: scale(1.1);
+  animation: like-animation 0.5s ease;
+}
+
+.like-count {
+  font-size: 24rpx;
+  color: #718096;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+@keyframes like-animation {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1.1); }
 }

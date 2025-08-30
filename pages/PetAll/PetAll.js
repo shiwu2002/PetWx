@@ -8,7 +8,7 @@ Page({
     totalPages: 0,
     loading: false,
     hasMore: true,
-    baseImageUrl: getApp().globalData.NodeUrl +'/photo', 
+    baseImageUrl: getApp().globalData.NodeUrl, 
     defaultImage: '/components/IMAGES/Discover.png', 
     searchKeyword: '', 
     // 新增点赞相关数据
@@ -126,7 +126,7 @@ Page({
       },
       data: {
         targetId: targetId,
-        targetType: '宠物'
+        targetType: 'pet'
       },
       success: function(res) {
         if (res.statusCode === 200 && res.data.code === 200) {
@@ -155,7 +155,7 @@ Page({
       },
       data: {
         targetId: targetId,
-        targetType: '宠物',
+        targetType: 'pet',
         userId: userId
       },
       success: function(res) {
@@ -181,7 +181,7 @@ Page({
     // 或者使用e.detail来获取事件详情
     
     const targetId = e.currentTarget.dataset.targetId;
-    const targetType = '宠物';
+    const targetType = 'pet';
     const userId = app.globalData.userId || 1; // 从全局数据获取用户ID
     
     if (!targetId) {

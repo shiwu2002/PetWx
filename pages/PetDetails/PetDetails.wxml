@@ -21,14 +21,8 @@
   <view class="pet-info-card" wx:if="{{pet}}">
     <view class="pet-header">
       <view class="pet-title-section">
-        <text class="pet-name">{{pet.name}}</text>
-        <!-- 点赞区域 -->
-        <view class="like-section" catchtap="toggleLike" data-target-id="{{pet.id}}">
-          <view class="like-icon {{likeStates[pet.id] ? 'liked' : ''}}">
-            {{likeStates[pet.id] ? '❤️' : '🤍'}}
-          </view>
-        </view>
-        <view class="pet-badges">
+  <text class="pet-name">{{pet.name}}</text>
+  <view class="pet-badges">
           <view class="status-badge {{pet.isAdopt === '待领养' ? 'adoptable' : 'adopted'}}">
             <text class="badge-text">{{pet.isAdopt}}</text>
           </view>
@@ -38,7 +32,15 @@
         </view>
       </view>
       
-      <view class="pet-meta-grid">
+  <view class="card-actions">
+    <view class="like-section" catchtap="toggleLike" data-target-id="{{pet.id}}">
+      <view class="like-icon {{likeStates[pet.id] ? 'liked' : ''}}">
+        {{likeStates[pet.id] ? '❤️' : '🤍'}}
+      </view>
+    </view>
+  </view>
+  
+  <view class="pet-meta-grid">
         <view class="meta-item">
           <view class="meta-icon">🐕</view>
           <view class="meta-content">
@@ -126,7 +128,7 @@
   <view class="comments-section" wx:if="{{pet}}">
     <view class="section-header">
       <text class="section-title">评论</text>
-      <text class="section-count">({{commentCount || 0}})</text>
+      <text class="section-count">({{commentCount-1 || 0}})</text>
     </view>
 
     <!-- 评论输入框 -->
@@ -201,7 +203,6 @@
                 <view class="reply-input-container" wx:if="{{showReplyId === reply.id}}">
                   <input class="reply-input" placeholder="回复 {{reply.userName}}..." bindinput="onReplyInput" value="{{replyContent}}"/>
                   <view class="reply-btns">
-                    <button class="cancel-btn" bindtap="hideReplyBox">取消</button>
                     <button class="send-btn" bindtap="submitReply" data-id="{{reply.id}}" disabled="{{replyContent.trim()}}">发送</button>
                   </view>
                 </view>
@@ -213,7 +214,6 @@
           <view class="reply-input-container" wx:if="{{showReplyId === item.id}}">
             <input class="reply-input" placeholder="回复 {{item.userName}}..." bindinput="onReplyInput" value="{{replyContent}}"/>
             <view class="reply-btns">
-              <button class="cancel-btn" bindtap="hideReplyBox">取消</button>
               <button class="send-btn" bindtap="submitReply" data-id="{{item.id}}" disabled="{{replyContent.trim()}}">发送</button>
             </view>
           </view>

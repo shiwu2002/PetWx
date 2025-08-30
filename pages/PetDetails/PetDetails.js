@@ -22,8 +22,8 @@ Page({
     supplyError: false,
     pet: null,
     // 新增点赞相关数据
-    likeStates: {}, // 存储每个宠物的点赞状态
-    likeCounts: {}, // 存储每个宠物的点赞数
+    likeStates: {}, // 存储每个pet的点赞状态
+    likeCounts: {}, // 存储每个pet的点赞数
     // 新增评论相关数据
     comments: [],
     commentCount: 0,
@@ -37,10 +37,10 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    this.fetchPetList(); // 你原本用于加载宠物列表的方法
+    this.fetchPetList(); // 你原本用于加载pet列表的方法
     // 加载用户ID
     this.loadUserId();
-    // 如果有宠物数据，加载点赞信息和评论
+    // 如果有pet数据，加载点赞信息和评论
     if (this.data.pet && this.data.pet.id) {
       this.loadLikeInfoForPet(this.data.pet.id);
       this.fetchComments();
@@ -84,7 +84,7 @@ Page({
     });
   },
 
-  // 加载指定宠物的点赞信息
+  // 加载指定pet的点赞信息
   loadLikeInfoForPet: function(petId) {
     this.getLikeCount(petId);
     this.getLikeState(petId);
@@ -102,7 +102,7 @@ Page({
       },
       data: {
         targetId: targetId,
-        targetType: '宠物'
+        targetType: 'pet'
       },
       success: function(res) {
         if (res.statusCode === 200 && res.data.code === 200) {
@@ -131,7 +131,7 @@ Page({
       },
       data: {
         targetId: targetId,
-        targetType: '宠物',
+        targetType: 'pet',
         userId: userId
       },
       success: function(res) {
@@ -154,7 +154,7 @@ Page({
   // 点赞/取消点赞
   toggleLike: function(e) {
     const targetId = e.currentTarget.dataset.targetId || this.data.pet.id;
-    const targetType = '宠物';
+    const targetType = 'pet';
     const userId = app.globalData.userId || 1; // 从全局数据获取用户ID
     
     if (!targetId) {
@@ -219,9 +219,16 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    const petId = options.petId;
+    const petId = options.id || options.petId; // 兼容id和petId参数
     const productId = options.productId;
     this.setData({ petId });
+
+  // 验证petId有效性
+  if (!petId) {
+    wx.showToast({ title: '未获取到宠物ID', icon: 'none', duration: 2000 });
+    wx.navigateBack();
+    return;
+  }
     
     // 商品详情逻辑
     if (productId) {
@@ -245,7 +252,7 @@ Page({
       });
     }
     
-    // 兼容原有宠物详情逻辑
+    // 兼容原有pet详情逻辑
     if (petId) {
       this.fetchPetList();
       this.fetchVaccineInfo(petId);
@@ -447,17 +454,17 @@ Page({
   fetchPetList() {
     // 首先检查是否有petId
     if (!this.data.petId) {
-      console.error('没有获取到宠物ID');
+      console.error('没有获取到petID');
       wx.showToast({ title: '参数错误', icon: 'none' });
       return;
     }
     
-    // 检查是否已有宠物数据，如果没有则请求
+    // 检查是否已有pet数据，如果没有则请求
     if (!this.data.pet) {
       this.setData({ vaccineLoading: true, vaccineError: false });
       
-      // 获取宠物基本信息
-      console.log('fetchPetList中开始获取宠物基本信息，petId:', this.data.petId);
+      // 获取pet基本信息
+      console.log('fetchPetList中开始获取pet基本信息，petId:', this.data.petId);
       wx.request({
         url: getApp().globalData.MyUrl+`/pet/getOneById/${this.data.petId}`,
         method: 'GET',
@@ -466,27 +473,28 @@ Page({
           'token': app.globalData.token
         },
         success: (res) => {
-          console.log('fetchPetList中宠物基本信息接口返回:', res);
+          console.log('fetchPetList中pet基本信息接口返回:', res);
           if (res.data && res.data.code === 200 && res.data.data) {
             let petData = res.data.data;
             
-            // 处理宠物图片URL
+            // 处理pet图片URL
             let processedImageUrl = null;
-            const nodeUrl = getApp().globalData.NodeUrl + "/photo";
+            const nodeUrl = getApp().globalData.NodeUrl;
             
             // 优先从数据中获取图片路径并与NodeUrl拼接
             if (petData.images && petData.images.length > 0) {
               // 处理所有图片路径，与NodeUrl拼接
               petData.images = petData.images.map(image => {
                 // 确保URL格式正确，避免双斜杠
-                return nodeUrl + (image.startsWith('/') ? '' : '/') + image;
+                const normalizedImage = image.replace(/^\//, ''); // 移除开头的斜杠
+                return nodeUrl.replace(/\/$/, '') + '/' + normalizedImage; // 避免双斜杠问题
               });
               processedImageUrl = petData.images[0];
             }
             
             // 如果没有有效图片路径，使用默认图片
             if (!processedImageUrl) {
-              processedImageUrl = '/components/IMAGES/1293.jpg_wh860.png'; // 默认图片
+              processedImageUrl = '/components/IMAGES/1293.jpg_wh860.jpg'; // 默认图片，修正扩展名
             }
             // 设置处理后的图片URL
             petData.processedImageUrl = processedImageUrl;
@@ -503,22 +511,22 @@ Page({
               pet: petData,
               vaccineLoading: false
             });
-            console.log('fetchPetList中宠物信息已设置:', this.data.pet);
+            console.log('fetchPetList中pet信息已设置:', this.data.pet);
             this.loadLikeInfoForPet(petData.id);
           } else {
-            console.error('fetchPetList中宠物基本信息接口返回错误:', res.data);
+            console.error('fetchPetList中pet基本信息接口返回错误:', res.data);
             this.setData({ vaccineLoading: false });
-            wx.showToast({ title: '获取宠物信息失败', icon: 'none' });
+            wx.showToast({ title: '获取pet信息失败', icon: 'none' });
           }
         },
         fail: (err) => {
-          console.error('请求宠物信息失败:', err);
+          console.error('请求pet信息失败:', err);
           this.setData({ vaccineError: true, vaccineLoading: false });
           wx.showToast({ title: '网络错误，请重试', icon: 'none' });
         }
       });
     } else {
-      // 如果已有宠物数据，确保加载点赞信息
+      // 如果已有pet数据，确保加载点赞信息
       if (this.data.pet && this.data.pet.id) {
         this.loadLikeInfoForPet(this.data.pet.id);
       }
@@ -571,14 +579,14 @@ Page({
     // 空函数，用于阻止事件冒泡
   },
 
-  // 分享宠物信息
+  // 分享pet信息
   sharePet() {
     const { pet } = this.data;
     console.log('分享按钮被点击，pet数据:', pet);
     
     if (!pet) {
       wx.showToast({
-        title: '宠物信息未加载完成',
+        title: 'pet信息未加载完成',
         icon: 'none'
       });
       return;
@@ -644,14 +652,31 @@ Page({
 
   // 格式化评论数据，最多支持两层评论
   formatComments(comments) {
+      console.log(comments)
     // 首先构建评论ID到评论的映射
     const commentMap = new Map();
+    // 获取头像基础URL
+    const avatarBaseUrl = getApp().globalData.NodeUrl;
+    
     comments.forEach(comment => {
       // 处理缺少的字段
       comment.replies = [];
       comment.level = 0; // 初始化层级
       comment.userName = comment.userName || '匿名用户';
-      comment.userAvatar = comment.userAvatar || '';
+      
+      // 处理头像URL，确保与基础URL拼接
+      if (comment.userAvatar) {
+        // 检查头像URL是否已经包含基础URL
+        if (comment.userAvatar.startsWith('http://') || comment.userAvatar.startsWith('https://')) {
+          // 已经是完整URL，保持不变
+        } else {
+          // 需要拼接基础URL，确保格式正确，避免双斜杠
+          comment.userAvatar = avatarBaseUrl + (comment.userAvatar.startsWith('/') ? '' : '/') + comment.userAvatar;
+            console.log(comment.userAvatar)
+        }
+      } else {
+        comment.userAvatar = '';
+      }
 
       // 格式化日期
       if (comment.createTime && Array.isArray(comment.createTime)) {
@@ -726,7 +751,7 @@ Page({
 
     if (!petId) {
       wx.showToast({
-        title: '宠物ID不存在',
+        title: 'petID不存在',
         icon: 'none'
       });
       return;
@@ -793,9 +818,10 @@ Page({
 
   // 显示回复框
   showReplyBox(e) {
-    const { id, name } = e.currentTarget.dataset;
+    const { id } = e.currentTarget.dataset;
+    // 如果点击的是当前显示的回复框，则隐藏它；否则显示新的回复框
     this.setData({
-      showReplyId: id,
+      showReplyId: this.data.showReplyId === id ? null : id,
       replyContent: ''
     });
   },
@@ -830,7 +856,7 @@ Page({
 
     if (!petId) {
       wx.showToast({
-        title: '宠物ID不存在',
+        title: 'petID不存在',
         icon: 'none'
       });
       return;

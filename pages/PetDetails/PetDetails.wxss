@@ -39,31 +39,41 @@
 
 .comment-input {
   flex: 1;
-  height: 60rpx;
+  height: 64rpx;
   font-size: 28rpx;
   color: #2d3748;
   background: transparent;
+  padding-left: 4rpx;
 }
 
 .send-btn {
-  width: 120rpx;
-  height: 60rpx;
-  line-height: 60rpx;
-  text-align: center;
-  background: #667eea;
-  color: white;
-  font-size: 28rpx;
-  border-radius: 30rpx;
-  margin-left: 16rpx;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 120rpx !important;
+  height: 64rpx !important;
+  line-height: 64rpx !important;
+  text-align: center !important;
+  background: #667eea !important;
+  color: white !important;
+  font-size: 28rpx !important;
+  font-weight: 600 !important;
+  border-radius: 32rpx !important;
+  margin-left: 16rpx !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2rpx 10rpx rgba(102, 126, 234, 0.2) !important;
+}
+
+.send-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 1rpx 6rpx rgba(102, 126, 234, 0.3);
 }
 
 .send-btn[disabled] {
-  opacity: 0.5;
+  opacity: 0.6;
   background: #cbd5e0;
+  box-shadow: none;
 }
 
 .comments-list {
@@ -78,10 +88,11 @@
 .reply-item {
   padding: 24rpx 0 24rpx 40rpx;
   border-bottom: 1rpx solid #edf2f7;
-  background: #f7fafc;
   margin-left: 40rpx;
-  border-radius: 16rpx;
   margin-top: 16rpx;
+  border-radius: 0;
+  background: transparent;
+  position: static;
 }
 
 .three-level-replies {
@@ -100,8 +111,8 @@
 .comment-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12rpx;
+  align-items: flex-start;
+  margin-bottom: 16rpx;
 }
 
 .avatar {
@@ -130,18 +141,21 @@
 .comment-info {
   flex: 1;
   margin-left: 16rpx;
+  display: flex;
+  flex-direction: column;
 }
 
 .user-name {
   font-size: 28rpx;
   font-weight: 600;
   color: #2d3748;
+  margin-bottom: 6rpx;
 }
 
 .comment-time {
-  font-size: 24rpx;
-  color: #718096;
-  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #a0aec0;
+  margin-top: 0;
 }
 
 .comment-actions {
@@ -153,6 +167,13 @@
   display: flex;
   align-items: center;
   margin-left: 24rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 20rpx;
+  transition: all 0.3s ease;
+}
+
+.action-btn:active {
+  background: rgba(102, 126, 234, 0.1);
 }
 
 .action-icon {
@@ -168,8 +189,10 @@
 .comment-content {
   font-size: 28rpx;
   color: #2d3748;
-  line-height: 1.6;
-  margin-bottom: 16rpx;
+  line-height: 1.7;
+  margin-bottom: 12rpx;
+  padding-left: 80rpx;
+  word-wrap: break-word;
 }
 
 .comment-content text {
@@ -178,8 +201,9 @@
 
 .reply-input-container {
   display: flex;
-  flex-direction: column;
-  background: #f7fafc;
+  flex-direction: row;
+  align-items: center;
+  gap: 16rpx;
   border-radius: 20rpx;
   padding: 16rpx;
   margin-top: 16rpx;
@@ -292,10 +316,14 @@ page {
 
 /* 宠物信息卡片 */
 .pet-info-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10rpx);
   border-radius: 24rpx;
-  margin: -40rpx 32rpx 32rpx;
+  margin: 32rpx 32rpx 32rpx;
   padding: 40rpx 32rpx;
   box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
   position: relative;
@@ -307,10 +335,12 @@ page {
 }
 
 .pet-title-section {
+  flex: 1;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 24rpx;
+  margin-right: 80rpx;
 }
 
 .pet-name {
@@ -501,6 +531,12 @@ page {
 }
 
 /* 点赞区域样式 */
+.card-actions {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+}
+
 .like-section {
   display: flex;
   align-items: center;
@@ -551,13 +587,12 @@ page {
 
 /* 点赞功能样式 */
 .like-section {
-  position: absolute;
-  top: 20rpx;
-  right: 20rpx;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  z-index: 10;
+  margin-left: 10rpx;
+  padding: 4rpx 12rpx;
+  background: transparent;
+  border-radius: 30rpx;
 }
 
 .like-icon {

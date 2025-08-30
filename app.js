@@ -1,4 +1,4 @@
-const IosUrl = "http://192.168.0.3:8082"
+const IosUrl = "http://192.168.0.4:8082"
 const WindowsUrl = "http://localhost:8082"
 
 App({
@@ -63,7 +63,7 @@ App({
       announcements: [],
       nickName:'',
       MyUrl: IosUrl,
-      NodeUrl:'http://localhost:8080',
+      NodeUrl:'http://localhost:8080/photo',
       userId:''
     }
   })

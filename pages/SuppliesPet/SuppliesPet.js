@@ -14,7 +14,9 @@ Page({
     size: 5,
     total: 0,
     pages: 0,
-    hasMore: true
+    hasMore: true,
+    likeStates: {}, // 存储点赞状态
+    likeCounts: {} // 存储点赞数
   },
 
   /**
@@ -133,7 +135,7 @@ Page({
           // 处理图片路径
           const processedRecords = res.data.records.map(item => ({
             ...item,
-            imageUrl: item.imageUrl ? getApp().globalData.NodeUrl +`/photo${item.imageUrl}` : '/components/IMAGES/1293.jpg_wh860.jpg'
+            imageUrl: item.imageUrl ? getApp().globalData.NodeUrl +`${item.imageUrl}` : '/components/IMAGES/1293.jpg_wh860.jpg'
     
         }));
           // 合并并去重
@@ -164,6 +166,11 @@ Page({
             hasMore: hasMore,
             current: currentPage // 在这里更新current
           });
+
+          // 为每个商品加载点赞信息
+          newList.forEach(item => {
+            this.loadLikeInfo(item.id);
+          });
         } else {
           this.setData({ error: true, loading: false });
         }
@@ -179,6 +186,109 @@ Page({
     console.log(id)
     wx.navigateTo({
       url: `/pages/SuppliesDetail/SuppliesDetail?id=${id}`
+    });
+  },
+
+  // 点赞功能相关方法
+  loadLikeInfo: function(targetId) {
+    this.getLikeCount(targetId);
+    this.getLikeState(targetId);
+  },
+
+  getLikeCount: function(targetId) {
+    const that = this;
+    wx.request({
+      url: getApp().globalData.MyUrl + '/like/count',
+      method: 'GET',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'token': app.globalData.token
+      },
+      data: {
+        targetId: targetId,
+        targetType: 'supper'
+      },
+      success: (res) => {
+        if (res.statusCode === 200 && res.data.code === 200) {
+          const likeCounts = { ...that.data.likeCounts };
+          likeCounts[targetId] = res.data.data || 0;
+          that.setData({ likeCounts });
+        }
+      }
+    });
+  },
+
+  getLikeState: function(targetId) {
+    const that = this;
+    wx.request({
+      url: getApp().globalData.MyUrl + '/like/isLiked',
+      method: 'GET',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'token': app.globalData.token
+      },
+      data: {
+        targetId: targetId,
+        targetType: 'supper',
+        userId: getApp().globalData.userId
+      },
+      success: (res) => {
+        if (res.statusCode === 200 && res.data.code === 200) {
+          const likeStates = { ...that.data.likeStates };
+          likeStates[targetId] = res.data.data || false;
+          that.setData({ likeStates });
+        }
+      }
+    });
+  },
+
+  toggleLike: function(e) {
+    const targetId = e.currentTarget.dataset.targetId;
+    const that = this;
+
+    wx.request({
+      url: getApp().globalData.MyUrl + '/like/toggle',
+      method: 'POST',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'token': app.globalData.token
+      },
+      data: {
+        targetId: targetId,
+        targetType: 'supper',
+        userId: getApp().globalData.userId
+      },
+      success: (res) => {
+        if (res.statusCode === 200 && res.data.code === 200) {
+          const likeStates = { ...that.data.likeStates };
+          likeStates[targetId] = !likeStates[targetId];
+          that.setData({ likeStates });
+
+          const likeCounts = { ...that.data.likeCounts };
+          if (likeStates[targetId]) {
+            likeCounts[targetId] = (likeCounts[targetId] || 0) + 1;
+          } else {
+            likeCounts[targetId] = Math.max(0, (likeCounts[targetId] || 0) - 1);
+          }
+          that.setData({ likeCounts });
+
+          wx.showToast({
+            title: likeStates[targetId] ? '点赞成功' : '取消点赞',
+            icon: 'none'
+          });
+        } else {
+          wx.showToast({
+            title: '操作失败',
+            icon: 'none'
+          });
+        }
+      },
+      fail: () => {
+        wx.showToast({
+          title: '网络错误',
+          icon: 'none'
+        });
+      }
     });
   }
 })
