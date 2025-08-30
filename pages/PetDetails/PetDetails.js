@@ -35,6 +35,7 @@ Page({
     currentImageIndex: 0,
     showImagePreview: false,
     previewImageList: [],
+    imageCount: 0,
   },
 
   /**
@@ -536,9 +537,13 @@ Page({
             this.setData({
               pet: petData,
               vaccineLoading: false,
-              currentImageIndex: 0 // 初始化轮播索引
+              currentImageIndex: 0, // 初始化轮播索引
+              imageCount: processedImages.length || (processedImageUrl ? 1 : 0) // 更新图片数量
             });
             console.log('fetchPetList中pet信息已设置:', this.data.pet);
+            console.log('图片数量 imageCount:', this.data.imageCount);
+            console.log('处理后的图片数组 processedImages:', processedImages);
+            console.log('当前轮播索引 currentImageIndex:', this.data.currentImageIndex);
             this.loadLikeInfoForPet(petData.id);
           } else {
             console.error('fetchPetList中pet基本信息接口返回错误:', res.data);
@@ -1008,6 +1013,7 @@ Page({
 
   // 轮播图变化事件
   onSwiperChange(e) {
+    console.log('swiper变化事件:', e.detail.current);
     this.setData({
       currentImageIndex: e.detail.current
     });
@@ -1060,12 +1066,16 @@ Page({
 
   // 上一张图片
   prevImage() {
-    const { currentImageIndex } = this.data;
-    const imageCount = this.getImageCount();
+    const { currentImageIndex, imageCount } = this.data;
+    console.log('点击上一张，当前索引:', currentImageIndex, '图片数量:', imageCount);
     
-    if (imageCount <= 1) return;
+    if (imageCount <= 1) {
+      console.log('图片数量不足，不执行切换');
+      return;
+    }
     
     const newIndex = currentImageIndex === 0 ? imageCount - 1 : currentImageIndex - 1;
+    console.log('切换到索引:', newIndex);
     this.setData({
       currentImageIndex: newIndex
     });
@@ -1073,12 +1083,16 @@ Page({
 
   // 下一张图片
   nextImage() {
-    const { currentImageIndex } = this.data;
-    const imageCount = this.getImageCount();
+    const { currentImageIndex, imageCount } = this.data;
+    console.log('点击下一张，当前索引:', currentImageIndex, '图片数量:', imageCount);
     
-    if (imageCount <= 1) return;
+    if (imageCount <= 1) {
+      console.log('图片数量不足，不执行切换');
+      return;
+    }
     
     const newIndex = currentImageIndex === imageCount - 1 ? 0 : currentImageIndex + 1;
+    console.log('切换到索引:', newIndex);
     this.setData({
       currentImageIndex: newIndex
     });
