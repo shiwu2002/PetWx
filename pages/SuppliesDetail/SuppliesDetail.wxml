@@ -45,6 +45,12 @@
     </view>
     <!-- 底部吸底操作按钮 -->
     <view class="bottom-bar">
+      <!-- 评论图标 -->
+      <view class="comment-icon" bindtap="toggleCommentModal">
+        <image src="/components/IMAGES/comment.png" class="comment-img" />
+        <text class="comment-text">评论</text>
+        <text wx:if="{{commentCount > 0}}" class="comment-count">{{commentCount}}</text>
+      </view>
       <button class="buy-btn" bindtap="onBuyTap">立即购买</button>
       <button class="cart-btn">加入购物车</button>
     </view>
@@ -57,6 +63,108 @@
           <button class="buy-popup-cancel" bindtap="onCloseBuyPopup">取消</button>
           <button class="buy-popup-confirm" loading="{{buyLoading}}" bindtap="onConfirmBuy">确认购买</button>
         </view>
+      </view>
+    </view>
+    
+    <!-- 评论弹窗 -->
+    <view wx:if="{{showCommentModal}}" class="comment-modal-mask" bindtap="toggleCommentModal">
+      <view class="comment-modal" catchtap="stopPropagation">
+        <view class="comment-header">
+          <text class="comment-title">商品评论</text>
+          <text class="comment-count-text">(共{{commentCount}}条)</text>
+          <view class="comment-close" bindtap="toggleCommentModal">×</view>
+        </view>
+        
+        <!-- 评论输入框 -->
+        <view class="comment-input-container">
+          <input class="comment-input" placeholder="说点什么..." bindinput="onCommentInput" value="{{commentContent}}"/>
+          <button class="send-btn" bindtap="submitComment" disabled="{{commentContent.trim()}}">发送</button>
+        </view>
+
+        <!-- 评论列表 -->
+        <scroll-view class="comments-list" scroll-y="true">
+          <block wx:for="{{comments}}" wx:key="id">
+            <view class="comment-item">
+              <view class="comment-header-item">
+                <view class="avatar" wx:if="{{item.userAvatar}}">
+                  <image src="{{item.userAvatar}}" mode="aspectFill"></image>
+                </view>
+                <view class="avatar" wx:else>
+                  <text class="avatar-text">{{item.userName ? item.userName.substring(0, 1) : '未'}}</text>
+                </view>
+                <view class="comment-info">
+                  <text class="user-name">{{item.userName || '匿名用户'}}</text>
+                  <text class="comment-time">{{item.createTime || '刚刚'}}</text>
+                </view>
+                <view class="comment-actions">
+                  <view class="action-btn reply-btn" bindtap="showReplyBox" data-id="{{item.id}}" data-name="{{item.userName}}">
+                    <text class="action-icon">💬</text>
+                    <text class="action-text">回复</text>
+                  </view>
+                  <view class="action-btn delete-btn" bindtap="deleteComment" data-id="{{item.id}}" wx:if="{{item.userId === userId}}">
+                    <text class="action-icon">🗑️</text>
+                  </view>
+                </view>
+              </view>
+              <view class="comment-content">
+                <text wx:if="{{item.parentId && item.parentUserName}}">@{{item.parentUserName}}: </text>
+                <text>{{item.content}}</text>
+              </view>
+
+              <!-- 二级评论 -->
+              <view class="reply-list" wx:if="{{item.replies && item.replies.length > 0}}">
+                <block wx:for="{{item.replies}}" wx:key="id" wx:for-item="reply">
+                  <view class="reply-item">
+                    <view class="comment-header-item">
+                      <view class="avatar" wx:if="{{reply.userAvatar}}">
+                        <image src="{{reply.userAvatar}}" mode="aspectFill"></image>
+                      </view>
+                      <view class="avatar" wx:else>
+                        <text class="avatar-text">{{reply.userName ? reply.userName.substring(0, 1) : '未'}}</text>
+                      </view>
+                      <view class="comment-info">
+                        <text class="user-name">{{reply.userName || '匿名用户'}}</text>
+                        <text class="comment-time">{{reply.createTime || '刚刚'}}</text>
+                      </view>
+                      <view class="comment-actions">
+                        <view class="action-btn reply-btn" bindtap="showReplyBox" data-id="{{reply.id}}" data-name="{{reply.userName}}">
+                          <text class="action-icon">💬</text>
+                          <text class="action-text">回复</text>
+                        </view>
+                        <view class="action-btn delete-btn" bindtap="deleteComment" data-id="{{reply.id}}" wx:if="{{reply.userId === userId}}">
+                          <text class="action-icon">🗑️</text>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="comment-content">
+                      <text wx:if="{{reply.parentId && reply.parentUserName}}">@{{reply.parentUserName}}: </text>
+                      <text>{{reply.content}}</text>
+                    </view>
+
+                    <!-- 二级评论的回复输入框 -->
+                    <view class="reply-input-container" wx:if="{{showReplyId === reply.id}}">
+                      <input class="reply-input" placeholder="回复 {{reply.userName}}..." bindinput="onReplyInput" value="{{replyContent}}"/>
+                      <view class="reply-btns">
+                        <button class="send-btn" bindtap="submitReply" data-id="{{reply.id}}" disabled="{{replyContent.trim()}}">发送</button>
+                      </view>
+                    </view>
+                  </view>
+                </block>
+              </view>
+
+              <!-- 一级评论的回复输入框 -->
+              <view class="reply-input-container" wx:if="{{showReplyId === item.id}}">
+                <input class="reply-input" placeholder="回复 {{item.userName}}..." bindinput="onReplyInput" value="{{replyContent}}"/>
+                <view class="reply-btns">
+                  <button class="send-btn" bindtap="submitReply" data-id="{{item.id}}" disabled="{{replyContent.trim()}}">发送</button>
+                </view>
+              </view>
+            </view>
+          </block>
+          <view class="no-comments" wx:if="{{comments.length === 0}}">
+            <text>暂无评论，快来抢沙发吧~</text>
+          </view>
+        </scroll-view>
       </view>
     </view>
   </view>

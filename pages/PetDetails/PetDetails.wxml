@@ -160,7 +160,7 @@
   <view class="comments-section" wx:if="{{pet}}">
     <view class="section-header">
       <text class="section-title">评论</text>
-      <text class="section-count">({{commentCount-1 || 0}})</text>
+      <text class="section-count">({{commentCount || 0}})</text>
     </view>
 
     <!-- 评论输入框 -->

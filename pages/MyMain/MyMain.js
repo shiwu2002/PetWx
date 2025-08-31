@@ -41,7 +41,7 @@ Page({
     const userId = app.globalData.userId || 1; // 从全局获取用户ID
 
     wx.request({
-      url: `http://localhost:8080/like/getLikeByUserId?userId=${userId}`,
+      url:  getApp().globalData.MyUrl + `/like/getLikeByUserId?userId=${userId}`,
       method: 'GET',
       header: {
           'token': getApp().globalData.token
