@@ -102,14 +102,6 @@
         <text class="option-icon">🗑️</text>
         <text class="option-text">清空聊天记录</text>
       </view>
-      <view class="option-item" bindtap="blockUser">
-        <text class="option-icon">🚫</text>
-        <text class="option-text">屏蔽用户</text>
-      </view>
-      <view class="option-item" bindtap="reportUser">
-        <text class="option-icon">⚠️</text>
-        <text class="option-text">举报用户</text>
-      </view>
     </view>
   </view>
 </view>
