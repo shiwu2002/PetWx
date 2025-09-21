@@ -24,6 +24,8 @@ Page({
     this.setData({
       "userInfo.avatarUrl": avatarUrl
     }, () => {
+      // 保存用户头像到本地存储
+      wx.setStorageSync('userAvatar', avatarUrl);
       const { nickName } = this.data.userInfo
       const hasUserInfo = nickName && avatarUrl && avatarUrl !== defaultAvatarUrl;
       this.setData({ hasUserInfo });
@@ -60,6 +62,9 @@ Page({
           userInfo: res.userInfo,
           hasUserInfo: true
         })
+        // 保存用户信息到本地存储
+        wx.setStorageSync('userInfo', res.userInfo);
+        wx.setStorageSync('userAvatar', res.userInfo.avatarUrl);
         console.log("跳转前")
         wx.switchTab({
             

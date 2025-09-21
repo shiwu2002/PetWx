@@ -3,9 +3,9 @@
   <view class="chat-header">
     <view class="header-content">
       <view class="chat-info">
-        <image class="chat-avatar" src="{{targetAvatar || '/components/IMAGES/1293.jpg_wh860.jpg'}}" mode="aspectFill"/>
+        <image class="chat-avatar" src="{{targetAvatar}}" mode="aspectFill"/>
         <view class="chat-details">
-          <text class="chat-name">{{targetName || '聊天对象'}}</text>
+          <text class="chat-name">{{targetName}}</text>
           <text class="chat-status">{{isOnline ? '在线' : '离线'}}</text>
         </view>
       </view>
@@ -27,7 +27,7 @@
       <view class="msg-row {{item.sender == userId ? 'me' : 'other'}}" id="msg-{{item.timestamp}}">
         <view class="msg-bubble-wrap {{item.sender == userId ? 'me' : 'other'}}">
           <!-- 对方头像 -->
-          <image wx:if="{{item.sender != userId}}" class="avatar" src="{{item.senderAvatar || '/components/IMAGES/1293.jpg_wh860.jpg'}}" mode="aspectFill"/>
+          <image wx:if="{{item.sender != userId}}" class="avatar" src="{{item.senderAvatar || targetAvatar}}" mode="aspectFill"/>
           
           <!-- 消息内容 -->
           <view class="msg-item {{item.sender == userId ? 'me' : 'other'}}">
@@ -42,7 +42,7 @@
               <text class="msg-text">{{item.content}}</text>
             </view>
             <view class="msg-status" wx:if="{{item.sender == userId}}">
-              <text class="status-icon">{{item.status === 'sent' ? '✓' : (item.status === 'delivered' ? '✓✓' : '⏳')}}</text>
+              <text class="status-icon {{item.status}}">{{item.status === 'sending' ? '⏳' : (item.status === 'sent' ? '✓' : (item.status === 'delivered' ? '✓✓' : '✓✓'))}}</text>
             </view>
           </view>
           
@@ -60,6 +60,17 @@
     </view>
   </scroll-view>
 
+  <!-- 表情选择面板 -->
+  <view wx:if="{{showEmojiPanel}}" class="emoji-panel">
+    <view class="emoji-grid">
+      <block wx:for="{{emojiList}}" wx:key="index">
+        <view class="emoji-item" bindtap="selectEmoji" data-emoji="{{item}}">
+          <text class="emoji-text">{{item}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
   <!-- 输入栏 -->
   <view class="input-bar">
     <view class="input-wrapper">
@@ -71,7 +82,7 @@
              bindconfirm="sendMsg"
              maxlength="500"/>
       <view class="input-actions">
-        <view class="action-btn" bindtap="showEmoji">
+        <view class="action-btn" bindtap="toggleEmojiPanel">
           <text class="action-icon">😊</text>
         </view>
         <view class="action-btn" bindtap="showMore">
@@ -84,4 +95,21 @@
     </button>
   </view>
 
-</view> 
+  <!-- 聊天选项弹窗 -->
+  <view wx:if="{{showOptions}}" class="options-modal" bindtap="hideChatOptions">
+    <view class="options-content" catchtap="stopPropagation">
+      <view class="option-item" bindtap="clearChat">
+        <text class="option-icon">🗑️</text>
+        <text class="option-text">清空聊天记录</text>
+      </view>
+      <view class="option-item" bindtap="blockUser">
+        <text class="option-icon">🚫</text>
+        <text class="option-text">屏蔽用户</text>
+      </view>
+      <view class="option-item" bindtap="reportUser">
+        <text class="option-icon">⚠️</text>
+        <text class="option-text">举报用户</text>
+      </view>
+    </view>
+  </view>
+</view>

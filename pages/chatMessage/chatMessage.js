@@ -67,12 +67,14 @@ Page({
     toView: '', // 用于自动滚动到底部
     aiDisabled: false, // AI回复冷却
     targetName: '客服', // 对方名称
-    targetAvatar: '/components/IMAGES/1293.jpg_wh860.jpg', // 对方头像
+    targetAvatar: '/components/IMAGES/Customer.png', // 客服头像资源
     isOnline: false, // 对方是否在线
     showDateDivider: false, // 是否显示日期分隔符
     todayDate: '', // 今天的日期
     showOptions: false, // 是否显示聊天选项
-    userInfo: {} // 当前用户信息
+    userInfo: {}, // 当前用户信息
+    showEmojiPanel: false, // 是否显示表情面板
+    emojiList: ['😀', '😂', '😍', '😎', '👍', '👏', '❤️', '🎉', '🤔', '😢', '😡', '😱', '😴', '🤩', '🥳', '😭', '😤', '🤗', '🥰', '😇', '🥳', '🥺', '🤓', '😜', '🤪', '😋', '🤓', '🤑', '🤠', '😷', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳', '😎', '🤓', '🧐', '😕', '😟', '🙁', '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨', '😰', '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫', '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩', '🤡', '👹', '👺', '👻', '👽', '👾', '🤖', '😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾']
   },
   onLoad(options) {
     // 假设 userId/targetId 通过 options 或全局获取
@@ -85,7 +87,18 @@ Page({
     });
 
     // 获取用户信息
-    const userInfo = wx.getStorageSync('userInfo') || {};
+    const userInfo = wx.getStorageSync('userInfo') || getApp().globalData.userInfo || {};
+    // 如果全局数据中没有用户信息，尝试从全局变量中获取
+    if (!userInfo.avatarUrl) {
+      // 优先从本地存储获取用户头像
+      const storedAvatar = wx.getStorageSync('userAvatar');
+      if (storedAvatar) {
+        userInfo.avatarUrl = storedAvatar;
+      } else if (getApp().globalData.nickName) {
+        userInfo.nickName = getApp().globalData.nickName;
+        userInfo.avatarUrl = '/components/IMAGES/1293.jpg_wh860.jpg'; // 默认头像
+      }
+    }
     this.setData({ userInfo });
 
     // 建立 WebSocket 连接
@@ -97,12 +110,34 @@ Page({
       ) {
         // 格式化时间戳
         msg.timeStr = formatTime(msg.timestamp);
+        
+        // 更新我发送的消息状态为已送达
+        if (msg.sender == targetId && msg.receiver == userId) {
+          msg.status = 'delivered';
+          this.updateMessageStatus(msg);
+          
+          // 模拟已读状态（3秒后）
+          setTimeout(() => {
+            this.markMessageAsRead(msg.timestamp);
+          }, 3000);
+        }
+        
         this.setData({
           messages: [...this.data.messages, msg],
           toView: 'msg-' + (msg.timestamp || Date.now())
         });
       }
     });
+  },
+  // 更新消息状态
+  updateMessageStatus(msg) {
+    const updatedMessages = this.data.messages.map(item => {
+      if (item.timestamp === msg.timestamp && item.sender === this.data.userId) {
+        return { ...item, status: msg.status || 'delivered' };
+      }
+      return item;
+    });
+    this.setData({ messages: updatedMessages });
   },
   // 格式化日期
   formatDate(date) {
@@ -145,6 +180,7 @@ Page({
       content: inputValue,
       senderName: senderName,
       timestamp: ts,
+      status: 'sending' // 初始状态为发送中
     };
     // 本地先显示
     this.setData({
@@ -159,7 +195,24 @@ Page({
     
     if (online) {
       sendMessage(msg);
+      // 更新消息状态为已发送
+      const updatedMessages = this.data.messages.map(item => {
+        if (item.timestamp === ts) {
+          return { ...item, status: 'sent' };
+        }
+        return item;
+      });
+      this.setData({ messages: updatedMessages });
     } else {
+      // 更新消息状态为已发送（AI消息）
+      const updatedMessages = this.data.messages.map(item => {
+        if (item.timestamp === ts) {
+          return { ...item, status: 'sent' };
+        }
+        return item;
+      });
+      this.setData({ messages: updatedMessages });
+      
       // 生成会话id（可用userId+sessionId或其它规则）
       const sessionId = userId + '_' + getApp().globalData.openid;
       try {
@@ -172,6 +225,7 @@ Page({
           content: aiRes && aiRes.data && aiRes.data.response ? aiRes.data.response : 'AI未回复',
           senderName: 'AI客服',
           timestamp: Date.now(),
+          status: 'sent'
         };
         this.setData({
           messages: [...this.data.messages, aiMsg],
@@ -182,6 +236,15 @@ Page({
           this.setData({ aiDisabled: false });
         }, 3000);
       } catch (e) {
+        // 发送失败，更新状态
+        const updatedMessages = this.data.messages.map(item => {
+          if (item.timestamp === ts) {
+            return { ...item, status: 'failed' };
+          }
+          return item;
+        });
+        this.setData({ messages: updatedMessages });
+        
         wx.showToast({ title: 'AI客服接口异常', icon: 'none' });
         this.setData({ aiDisabled: false });
       }
@@ -221,8 +284,34 @@ Page({
   showEmoji() {
     wx.showToast({ title: '表情功能开发中', icon: 'none' });
   },
+  // 显示/隐藏表情面板
+  toggleEmojiPanel() {
+    this.setData({ 
+      showEmojiPanel: !this.data.showEmojiPanel,
+      showOptions: false // 关闭其他面板
+    });
+  },
+  // 选择表情
+  selectEmoji(e) {
+    const emoji = e.currentTarget.dataset.emoji;
+    const currentValue = this.data.inputValue || '';
+    this.setData({
+      inputValue: currentValue + emoji,
+      showEmojiPanel: false // 选择后关闭面板
+    });
+  },
   // 显示更多功能
   showMore() {
     wx.showToast({ title: '更多功能开发中', icon: 'none' });
+  },
+  // 标记消息为已读
+  markMessageAsRead(timestamp) {
+    const updatedMessages = this.data.messages.map(item => {
+      if (item.timestamp === timestamp && item.status === 'delivered') {
+        return { ...item, status: 'read' };
+      }
+      return item;
+    });
+    this.setData({ messages: updatedMessages });
   }
 });
