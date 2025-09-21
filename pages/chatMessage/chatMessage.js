@@ -65,13 +65,28 @@ Page({
     inputValue: '',
     messages: [], // 当前会话消息
     toView: '', // 用于自动滚动到底部
-    aiDisabled: false // AI回复冷却
+    aiDisabled: false, // AI回复冷却
+    targetName: '客服', // 对方名称
+    targetAvatar: '/components/IMAGES/1293.jpg_wh860.jpg', // 对方头像
+    isOnline: false, // 对方是否在线
+    showDateDivider: false, // 是否显示日期分隔符
+    todayDate: '', // 今天的日期
+    showOptions: false, // 是否显示聊天选项
+    userInfo: {} // 当前用户信息
   },
   onLoad(options) {
     // 假设 userId/targetId 通过 options 或全局获取
     const userId = wx.getStorageSync('userId') || getApp().globalData.openid || '1001';
     const targetId = options.targetId || '2001'; // 例如客服id
-    this.setData({ userId, targetId });
+    this.setData({ 
+      userId, 
+      targetId,
+      todayDate: this.formatDate(new Date())
+    });
+
+    // 获取用户信息
+    const userInfo = wx.getStorageSync('userInfo') || {};
+    this.setData({ userInfo });
 
     // 建立 WebSocket 连接
     connect(userId, (msg) => {
@@ -88,6 +103,13 @@ Page({
         });
       }
     });
+  },
+  // 格式化日期
+  formatDate(date) {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${year}年${month}月${day}日`;
   },
   onUnload() {
     disconnect(this.data.userId);
@@ -133,6 +155,8 @@ Page({
 
     // 判断客服是否在线
     const online = await checkKefuOnline();
+    this.setData({ isOnline: online });
+    
     if (online) {
       sendMessage(msg);
     } else {
@@ -162,5 +186,43 @@ Page({
         this.setData({ aiDisabled: false });
       }
     }
+  },
+  // 显示聊天选项
+  showChatOptions() {
+    this.setData({ showOptions: true });
+  },
+  // 隐藏聊天选项
+  hideChatOptions() {
+    this.setData({ showOptions: false });
+  },
+  // 阻止事件冒泡
+  stopPropagation(e) {
+    // 空函数，用于阻止事件冒泡
+  },
+  // 清空聊天记录
+  clearChat() {
+    this.setData({ 
+      messages: [],
+      showOptions: false
+    });
+    wx.showToast({ title: '聊天记录已清空', icon: 'none' });
+  },
+  // 屏蔽用户
+  blockUser() {
+    this.setData({ showOptions: false });
+    wx.showToast({ title: '已屏蔽该用户', icon: 'none' });
+  },
+  // 举报用户
+  reportUser() {
+    this.setData({ showOptions: false });
+    wx.showToast({ title: '已举报该用户', icon: 'none' });
+  },
+  // 显示表情
+  showEmoji() {
+    wx.showToast({ title: '表情功能开发中', icon: 'none' });
+  },
+  // 显示更多功能
+  showMore() {
+    wx.showToast({ title: '更多功能开发中', icon: 'none' });
   }
 });

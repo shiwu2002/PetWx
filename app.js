@@ -62,7 +62,7 @@ App({
       token: '',
       announcements: [],
       nickName:'',
-      MyUrl: IosUrl,
+      MyUrl: WindowsUrl,
       NodeUrl:'http://localhost:8080/photo',
       userId:''
     }
