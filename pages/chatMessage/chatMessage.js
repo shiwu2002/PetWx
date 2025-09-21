@@ -103,6 +103,7 @@ Page({
 
     // 建立 WebSocket 连接
     connect(userId, (msg) => {
+      console.log('接收到WebSocket消息:', msg);
       // 只处理当前会话消息
       if (
         (msg.sender == targetId && msg.receiver == userId) ||
@@ -126,8 +127,28 @@ Page({
           messages: [...this.data.messages, msg],
           toView: 'msg-' + (msg.timestamp || Date.now())
         });
+        console.log('更新消息列表:', [...this.data.messages, msg]);
+      } else {
+        console.log('忽略非当前会话消息:', msg);
       }
     });
+    
+    // 启动定时检查客服在线状态
+    this.startOnlineCheck();
+  },
+  // 启动定时检查客服在线状态
+  startOnlineCheck() {
+    // 每30秒检查一次客服在线状态
+    this.onlineCheckInterval = setInterval(async () => {
+      const online = await checkKefuOnline();
+      const prevOnlineStatus = this.data.isOnline;
+      this.setData({ isOnline: online });
+      
+      // 如果客服状态从离线变为在线，发送一条心跳消息测试连接
+      if (online && !prevOnlineStatus) {
+        console.log('客服上线，WebSocket连接已恢复');
+      }
+    }, 30000); // 30秒检查一次
   },
   // 更新消息状态
   updateMessageStatus(msg) {
@@ -147,6 +168,11 @@ Page({
     return `${year}年${month}月${day}日`;
   },
   onUnload() {
+    // 清理定时器
+    if (this.onlineCheckInterval) {
+      clearInterval(this.onlineCheckInterval);
+    }
+    
     disconnect(this.data.userId);
     // 离开页面时清除AI记忆
     const userId = this.data.userId;
@@ -174,17 +200,25 @@ Page({
       senderName = getApp().globalData.nickName || wx.getStorageSync('userInfo')?.nickName || '';
     } catch (e) {}
     const ts = Date.now();
-    const msg = {
+    
+    // 发送给后端的消息不包含status字段
+    const messageToSend = {
       sender: userId,
       receiver: targetId,
       content: inputValue,
       senderName: senderName,
-      timestamp: ts,
+      timestamp: ts
+    };
+    
+    // 本地显示的消息包含status字段
+    const localMessage = {
+      ...messageToSend,
       status: 'sending' // 初始状态为发送中
     };
+    
     // 本地先显示
     this.setData({
-      messages: [...this.data.messages, msg],
+      messages: [...this.data.messages, localMessage],
       inputValue: '',
       toView: 'msg-' + ts
     });
@@ -194,7 +228,8 @@ Page({
     this.setData({ isOnline: online });
     
     if (online) {
-      sendMessage(msg);
+      console.log("发送消息到在线客服:", messageToSend);
+      sendMessage(messageToSend); // 发送时不包含status字段
       // 更新消息状态为已发送
       const updatedMessages = this.data.messages.map(item => {
         if (item.timestamp === ts) {
@@ -203,6 +238,15 @@ Page({
         return item;
       });
       this.setData({ messages: updatedMessages });
+      
+      // 添加一个5秒的超时检查，如果没有收到回复则提示
+      setTimeout(() => {
+        const messageExists = this.data.messages.some(msg => 
+          msg.timestamp === ts && msg.status === 'sent');
+        if (messageExists) {
+          console.log("5秒内未收到客服回复");
+        }
+      }, 5000);
     } else {
       // 更新消息状态为已发送（AI消息）
       const updatedMessages = this.data.messages.map(item => {
