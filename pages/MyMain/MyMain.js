@@ -491,17 +491,40 @@ Page({
             if (item.imageUrls) {
               let urls = item.imageUrls;
               try {
+                // 先尝试解析JSON字符串
                 urls = JSON.parse(item.imageUrls);
-              } catch (e) {}
-              if (typeof urls === 'string') urls = [urls];
+              } catch (e) {
+                // 如果解析失败，保持原样
+                console.log('JSON解析失败，使用原始数据:', item.imageUrls);
+              }
+              
+              // 确保urls是数组格式
+              if (!Array.isArray(urls)) {
+                urls = [urls];
+              }
+              
               imgArr = urls.map(url => {
-                url = url.replace(/^"|"$/g, ''); // 去除首尾引号
-                if (/^http/.test(url)) return url;
-                return MyUrl + url;
-              });
+                // 处理可能的引号和空格
+                if (typeof url === 'string') {
+                  url = url.replace(/^"|"$/g, '').trim(); // 去除首尾引号
+                  // 如果URL不为空且不是完整的http地址，则拼接基础URL
+                  if (url && !/^https?:\/\//.test(url)) {
+                    // 确保URL以/开头
+                    if (!url.startsWith('/')) {
+                      url = '/' + url;
+                    }
+                    return MyUrl + url;
+                  }
+                  // 对于HTTP链接，在真机上使用一个中转服务或者提示用户
+                  // 这里我们保持原样，但在WXML中会添加错误处理
+                  return url;
+                }
+                return url;
+              }).filter(url => url); // 过滤掉空值
             }
             return imgArr;
           });
+          console.log('处理后的图片URL:', previewUrls);
           this.setData({ myDiscoverData: list, myDiscoverPreviewUrls: previewUrls });
         } else {
           this.setData({ myDiscoverData: [], myDiscoverPreviewUrls: [] });
@@ -530,5 +553,14 @@ Page({
         url: url
       });
     }
+  },
+
+  // 图片加载错误处理
+  onImageError: function(e) {
+    console.log('图片加载失败:', e);
+    const originalSrc = e.currentTarget.dataset.originalSrc;
+    console.log('原始图片地址:', originalSrc);
+    // 这里可以设置默认图片或者提示用户
+    // 在实际应用中，您可以在这里添加错误处理逻辑
   }
 });

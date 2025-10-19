@@ -196,8 +196,8 @@
           </view>
           
           <view class="discover-images" wx:if="{{myDiscoverPreviewUrls[index] && myDiscoverPreviewUrls[index].length > 0}}">
-            <block wx:for="{{myDiscoverPreviewUrls[index]}}" wx:key="img">
-              <image class="discover-img" src="{{img}}" mode="aspectFill" />
+            <block wx:for="{{myDiscoverPreviewUrls[index]}}" wx:key="*this">
+              <image class="discover-img" src="{{item}}" mode="aspectFill" lazy-load="true" show-menu-by-longpress="true" binderror="onImageError" data-original-src="{{item}}" />
             </block>
           </view>
         </view>

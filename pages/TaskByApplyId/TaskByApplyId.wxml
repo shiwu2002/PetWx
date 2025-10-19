@@ -1,37 +1,78 @@
 <!--pages/TaskByApplyId/TaskByApplyId.wxml-->
-<view wx:if="{{loading}}">
-  <text>加载中...</text>
-</view>
-<view wx:elif="{{error}}">
-  <text style="color:red">{{error}}</text>
-</view>
-<view wx:elif="{{task}}" class="task-card">
-  <view class="task-row"><text class="task-label">员工：</text><text>{{task.staffName}}</text></view>
-  <view class="task-row"><text class="task-label">客户：</text><text>{{task.customerName}}</text></view>
-  <view class="task-row"><text class="task-label">家访时间：</text><text>{{task.visitDate}}</text></view>
-  <view class="task-row"><text class="task-label">家访地址：</text><text>{{task.deliveryAddress}}</text></view>
-  <view class="task-row"><text class="task-label">任务状态：</text><text>{{task.result}}</text></view>
-</view>
-<view wx:else>
-  <text>暂无家访任务</text>
-  <!-- 家访任务提交表单 -->
-  <view class="form-block">
-    <view class="form-row">
-      <text class="form-label">预约日期：</text>
-      <picker mode="date" value="{{visitDate}}" bindchange="onDateChange">
-        <view class="picker-value">{{visitDate ? visitDate : '请选择日期'}}</view>
-      </picker>
+<view class="container">
+  <view wx:if="{{loading}}" class="loading-container">
+    <text class="loading-text">加载中...</text>
+  </view>
+  
+  <view wx:elif="{{error}}" class="error-container">
+    <text class="error-text">{{error}}</text>
+  </view>
+  
+  <view wx:elif="{{task}}" class="task-card">
+    <view class="task-header">
+      <text class="task-title">家访任务详情</text>
     </view>
-    <view class="form-row">
-      <text class="form-label">预约时间：</text>
-      <picker mode="time" value="{{visitTime}}" bindchange="onTimeChange">
-        <view class="picker-value">{{visitTime ? visitTime : '请选择时间'}}</view>
-      </picker>
+    <view class="task-row">
+      <text class="task-label">员工：</text>
+      <text class="task-value">{{task.staffName}}</text>
     </view>
-    <view class="form-row">
-      <text class="form-label">家访地址：</text>
-      <input class="form-input" placeholder="请输入家访地址" value="{{deliveryAddress}}" bindinput="onAddressInput" />
+    <view class="task-row">
+      <text class="task-label">客户：</text>
+      <text class="task-value">{{task.customerName}}</text>
     </view>
-    <button class="submit-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="onSubmitTask">提交家访任务</button>
+    <view class="task-row">
+      <text class="task-label">家访时间：</text>
+      <text class="task-value">{{task.visitDate}}</text>
+    </view>
+    <view class="task-row">
+      <text class="task-label">家访地址：</text>
+      <text class="task-value">{{task.deliveryAddress}}</text>
+    </view>
+    <view class="task-row">
+      <text class="task-label">任务状态：</text>
+      <text class="task-value">{{task.result}}</text>
+    </view>
+  </view>
+  
+  <view wx:else class="form-container">
+    <view class="form-header">
+      <text class="form-title">填写家访任务</text>
+    </view>
+    
+    <view class="form-block">
+      <view class="form-row">
+        <text class="form-label">预约日期：</text>
+        <picker mode="date" value="{{visitDate}}" bindchange="onDateChange">
+          <view class="picker-container">
+            <view class="picker-value">{{visitDate ? visitDate : '请选择日期'}}</view>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+      
+      <view class="form-row">
+        <text class="form-label">预约时间：</text>
+        <picker mode="time" value="{{visitTime}}" bindchange="onTimeChange">
+          <view class="picker-container">
+            <view class="picker-value">{{visitTime ? visitTime : '请选择时间'}}</view>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+      
+      <view class="form-row">
+        <text class="form-label">家访地址：</text>
+        <input class="form-input" placeholder="请输入家访地址" value="{{deliveryAddress}}" bindinput="onAddressInput" />
+      </view>
+      
+      <button class="submit-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="onSubmitTask">
+        <text wx:if="{{submitting}}">提交中...</text>
+        <text wx:else>提交家访任务</text>
+      </button>
+    </view>
+    
+    <view class="form-note">
+      <text class="note-text">提示：系统已为您预填了当前日期和时间，请根据实际情况调整。</text>
+    </view>
   </view>
 </view>

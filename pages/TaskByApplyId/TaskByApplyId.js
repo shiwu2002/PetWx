@@ -74,6 +74,8 @@ Page({
           }
           this.setData({ task: task, loading: false, error: '' });
         } else if (res.data && res.data.code === 202) {
+          // 当没有任务时，自动填充默认的地址和时间信息
+          this._fillDefaultInfo();
           this.setData({ task: null, loading: false, error: '' });
         } else if (res.statusCode === 500 && retryCount < 2) {
           // 500错误，重试
@@ -81,12 +83,32 @@ Page({
             this._fetchTask(applyId, retryCount + 1);
           }, 500);
         } else {
+          this._fillDefaultInfo();
           this.setData({ task: null, loading: false, error: res.data && res.data.message ? res.data.message : '未查询到家访任务' });
         }
       },
       fail: () => {
+        this._fillDefaultInfo();
         this.setData({ error: '获取家访任务失败', loading: false });
       }
+    });
+  },
+
+  // 新增：填充默认信息
+  _fillDefaultInfo() {
+    // 获取当前日期
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    
+    // 设置默认的访问日期和时间
+    this.setData({
+      visitDate: `${year}-${month}-${day}`,
+      visitTime: `${hours}:${minutes}`,
+      deliveryAddress: '' // 地址需要用户手动填写
     });
   },
 
