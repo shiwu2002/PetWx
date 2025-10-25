@@ -13,7 +13,7 @@
           <text wx:if="{{item.isHot == 1}}" class="supply-hot">热销</text>
         </view>
         <view class="supply-meta-row">
-          <text class="supply-name">{{item.name}}</text>
+          <text class="supply-brand">品牌：{{item.brand}}</text>
           <view class="like-section" catchtap="toggleLike" data-target-id="{{item.id}}">
             <view class="like-icon {{likeStates[item.id] ? 'liked' : ''}}">
               {{likeStates[item.id] ? '❤️' : '🤍'}}
@@ -24,7 +24,12 @@
         <view class="supply-desc-block">
           <text class="supply-desc">{{item.description}}</text>
         </view>
+        <view class="supply-price-row">
+          <text class="supply-price">￥{{item.price}}</text>
+          <text class="supply-stock">库存: {{item.stockQuantity}}</text>
+        </view>
         <view class="action-container">
+          <button class="cart-btn" data-supply="{{item}}" bindtap="showAddToCartPopup">加入购物车</button>
           <button class="detail-btn" data-id="{{item.id}}" bindtap="goToDetail">查看详情</button>
         </view>
       </view>
@@ -33,4 +38,16 @@
   <!-- 加载更多提示 -->
   <view wx:if="{{loading && suppliesList.length > 0}}" class="loading-more">加载中...</view>
   <view wx:if="{{!hasMore && suppliesList.length > 0}}" class="no-more">没有更多了</view>
+  
+  <!-- 购物车弹窗 -->
+  <view wx:if="{{showCartPopup}}" class="buy-popup-mask">
+    <view class="buy-popup">
+      <view class="buy-popup-title">加入购物车 - {{selectedSupply.productName}}</view>
+      <input class="buy-popup-input" type="number" min="1" max="{{selectedSupply.stockQuantity}}" value="{{cartNum}}" bindinput="onCartNumInput" />
+      <view class="buy-popup-actions">
+        <button class="buy-popup-cancel" bindtap="onCloseCartPopup">取消</button>
+        <button class="buy-popup-confirm" bindtap="onConfirmAddToCart">确认加入</button>
+      </view>
+    </view>
+  </view>
 </view>

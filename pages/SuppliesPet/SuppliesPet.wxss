@@ -89,10 +89,20 @@ page {
 .supply-brand {
   color: #718096;
 }
+.supply-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12rpx 0;
+}
 .supply-price {
   color: #e53e3e;
   font-weight: 700;
   font-size: 28rpx;
+}
+.supply-stock {
+  font-size: 24rpx;
+  color: #718096;
 }
 .supply-desc-block {
   width: 100%;
@@ -108,29 +118,157 @@ page {
   line-height: 1.7;
 }
 .action-container {
-  text-align: center !important;
-  width: 100% !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
   padding: 16rpx 0 0;
-  height: auto;
+  gap: 16rpx;
 }
 
-wx-button.detail-btn {
-  display: inline-block !important;
-  width: 280rpx !important;
-  height: 64rpx !important;
-  padding: 0 !important;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
-  border: none !important;
+wx-button.cart-btn {
+  flex: 1;
+  height: 64rpx;
+  padding: 0;
+  background: #fff;
+  color: #667eea;
+  border: 2rpx solid #667eea;
   border-radius: 16rpx;
   font-size: 28rpx;
   font-weight: 700;
   box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.3);
   transition: all 0.3s ease;
 }
+
+.cart-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 1rpx 4rpx rgba(102, 126, 234, 0.3);
+  background: #f0f7ff;
+}
+
+wx-button.detail-btn {
+  flex: 1;
+  height: 64rpx;
+  padding: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
 .detail-btn:active {
   transform: translateY(2rpx);
   box-shadow: 0 1rpx 4rpx rgba(102, 126, 234, 0.3);
+}
+
+/* 购物车弹窗样式 */
+.buy-popup-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(8rpx);
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.buy-popup {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10rpx);
+  border-radius: 24rpx;
+  padding: 40rpx 32rpx;
+  min-width: 600rpx;
+  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideUp 0.3s;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50rpx); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.buy-popup-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #2d3748;
+  margin-bottom: 32rpx;
+  text-align: center;
+}
+
+.buy-popup-input {
+  width: 100%;
+  height: 80rpx;
+  border: 2rpx solid #e2e8f0;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  background: #fff;
+  transition: all 0.3s;
+  box-sizing: border-box;
+  margin-bottom: 32rpx;
+  text-align: center;
+}
+
+.buy-popup-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 6rpx rgba(102, 126, 234, 0.1);
+  outline: none;
+}
+
+.buy-popup-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 24rpx;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.buy-popup-cancel, .buy-popup-confirm {
+  flex: 1;
+  padding: 16rpx 0;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.buy-popup-cancel {
+  background: #fff;
+  color: #718096;
+  border: 2rpx solid #e2e8f0;
+}
+
+.buy-popup-cancel:active {
+  background: #f7fafc;
+}
+
+.buy-popup-confirm {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.3);
+}
+
+.buy-popup-confirm:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.2);
 }
 
 /* 加载更多相关样式 */

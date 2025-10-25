@@ -52,16 +52,28 @@
         <text wx:if="{{commentCount > 0}}" class="comment-count">{{commentCount}}</text>
       </view>
       <button class="buy-btn" bindtap="onBuyTap">立即购买</button>
-      <button class="cart-btn">加入购物车</button>
+      <button class="cart-btn" bindtap="onAddToCart">加入购物车</button>
     </view>
     <!-- 购买弹窗 -->
     <view wx:if="{{showBuyPopup}}" class="buy-popup-mask">
       <view class="buy-popup">
         <view class="buy-popup-title">购买数量</view>
-        <input class="buy-popup-input" type="number" min="1" :max="{{supply.stockQuantity}}" value="{{buyNum}}" bindinput="onBuyNumInput" />
+        <input class="buy-popup-input" type="number" min="1" max="{{supply.stockQuantity}}" value="{{buyNum}}" bindinput="onBuyNumInput" />
         <view class="buy-popup-actions">
           <button class="buy-popup-cancel" bindtap="onCloseBuyPopup">取消</button>
           <button class="buy-popup-confirm" loading="{{buyLoading}}" bindtap="onConfirmBuy">确认购买</button>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 购物车弹窗 -->
+    <view wx:if="{{showCartPopup}}" class="buy-popup-mask">
+      <view class="buy-popup">
+        <view class="buy-popup-title">加入购物车</view>
+        <input class="buy-popup-input" type="number" min="1" max="{{supply.stockQuantity}}" value="{{cartNum}}" bindinput="onCartNumInput" />
+        <view class="buy-popup-actions">
+          <button class="buy-popup-cancel" bindtap="onCloseCartPopup">取消</button>
+          <button class="buy-popup-confirm" bindtap="onConfirmAddToCart">确认加入</button>
         </view>
       </view>
     </view>
@@ -168,4 +180,4 @@
       </view>
     </view>
   </view>
-</view> 
+</view>

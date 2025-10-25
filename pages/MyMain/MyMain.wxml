@@ -294,5 +294,72 @@
         <text class="empty-desc">快去浏览并收藏喜欢的宠物或用品吧~</text>
       </view>
     </block>
+    
+    <!-- 购物车内容 -->
+    <block wx:if="{{selectedNav === 'myCart'}}">
+      <view class="content-header">
+        <text class="content-title">购物车</text>
+        <view class="cart-header-actions" wx:if="{{cartList.length > 0}}">
+          <button class="clear-cart-btn" bindtap="clearCart">清空购物车</button>
+        </view>
+      </view>
+      
+      <view wx:if="{{loading}}" class="loading-state">
+        <view class="loading-spinner"></view>
+        <text class="loading-text">加载中...</text>
+      </view>
+      
+      <view wx:elif="{{error}}" class="error-state">
+        <view class="error-icon">⚠️</view>
+        <text class="error-text">获取购物车失败</text>
+        <button class="retry-btn" bindtap="loadUserCart">
+          <text class="btn-text">重试</text>
+        </button>
+      </view>
+      
+      <block wx:elif="{{cartList && cartList.length > 0}}">
+        <view class="cart-list">
+          <block wx:for="{{cartList}}" wx:key="id">
+            <view class="cart-item">
+              <view class="item-content">
+                <image class="item-image" src="{{item.imageUrl}}" mode="aspectFill"/>
+                <view class="item-info">
+                  <text class="item-name">{{item.productName}}</text>
+                  <text class="item-brand">{{item.brand}}</text>
+                  <text class="item-category">{{item.category}}</text>
+                  <view class="item-price-row">
+                    <text class="item-price">￥{{item.price}}</text>
+                    <text class="item-subtotal">小计: ￥{{item.subtotal}}</text>
+                  </view>
+                </view>
+              </view>
+              
+              <view class="item-actions">
+                <view class="quantity-control">
+                  <button class="quantity-btn minus" bindtap="updateCartItemQuantity" data-id="{{item.id}}" data-action="minus">-</button>
+                  <input class="quantity-input" type="number" min="1" value="{{item.quantity}}" bindchange="updateCartItemQuantity" data-id="{{item.id}}" />
+                  <button class="quantity-btn plus" bindtap="updateCartItemQuantity" data-id="{{item.id}}" data-action="plus">+</button>
+                </view>
+                <button class="remove-btn" bindtap="removeCartItem" data-id="{{item.id}}">删除</button>
+              </view>
+            </view>
+          </block>
+        </view>
+        
+        <view class="cart-footer">
+          <view class="cart-total">
+            <text class="total-label">总计:</text>
+            <text class="total-amount">￥{{cartTotal}}</text>
+          </view>
+          <button class="checkout-btn">去结算</button>
+        </view>
+      </block>
+      
+      <view wx:else class="empty-state">
+        <view class="empty-icon">🛒</view>
+        <text class="empty-text">购物车空空如也</text>
+        <text class="empty-desc">快去添加一些商品到购物车吧~</text>
+      </view>
+    </block>
   </view>
 </view>
