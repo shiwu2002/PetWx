@@ -2633,7 +2633,7 @@ page {
   align-items: center;
   
 
-  gap: 1rpx;
+  gap: 20rpx;
 
 }
 
@@ -2641,9 +2641,9 @@ page {
 
 .quantity-btn {
 
-  width: 30rpx !important;
+  width: 60rpx !important;
 
-  height: 60rpx !important;
+  height: 60rpx;
 
   border-radius: 30%;
 
@@ -2691,13 +2691,13 @@ page {
 
 .cart-item .quantity-btn {
 
-  width: 30rpx !important;
+  width: 45rpx !important;
 
   height: 60rpx !important;
 
-  min-width: 30rpx;
+  min-width: 40rpx;
 
-  flex: 0 0 30rpx;
+  flex: 0 0 70rpx;
 
   box-sizing: border-box;
 
@@ -2707,7 +2707,7 @@ page {
 
 .cart-item .quantity-btn.minus::after {
 
-  content: '-';
+
 
   display: block;
 
@@ -2719,7 +2719,7 @@ page {
 
 .cart-item .quantity-btn.plus::after {
 
-  content: '+';
+
 
   display: block;
 
