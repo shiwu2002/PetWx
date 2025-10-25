@@ -7,6 +7,9 @@ Page({
    */
   data: {
     likeList: [],
+    // 购物车相关数据
+    cartList: [],
+    cartTotal: 0,
     loading: true,
     error: false,
     userInfo: {
@@ -21,7 +24,7 @@ Page({
     showServiceModal: false,
     editNickName: '',
     editPhone: '',
-    selectedNav: 'profile', // 'profile' | 'myApply' | 'myDiscover' | 'myLike'
+    selectedNav: 'profile', // 'profile' | 'myApply' | 'myDiscover' | 'myLike' | 'myCart'
     applyData: [],
     applyDataPreviewUrls: [],
     myDiscoverData: [],
@@ -31,7 +34,8 @@ Page({
       { key: 'profile', label: '个人信息' },
       { key: 'myApply', label: '我的预约' },
       { key:'myDiscover',label:'救助信息'},
-      { key:'myLike',label:'我的喜欢'}
+      { key:'myLike',label:'我的喜欢'},
+      { key:'myCart',label:'购物车'}
     ]
   },
 
@@ -120,6 +124,221 @@ Page({
       fail: () => {
         this.setData({ loading: false, error: true, likeList: [] });
         wx.showToast({ title: '网络请求失败', icon: 'none' });
+      }
+    });
+  },
+
+  // ==================== 购物车功能 ====================
+  // 加载用户购物车列表
+  loadUserCart: function() {
+    this.setData({ loading: true, error: false });
+    const userId = app.globalData.userId;
+    
+    if (!userId) {
+      this.setData({ loading: false, error: true, cartList: [] });
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return;
+    }
+
+    wx.request({
+      url: getApp().globalData.MyUrl + '/supplies/list',
+      method: 'GET',
+      header: {
+        'token': getApp().globalData.token
+      },
+      data: {
+        userId: userId
+      },
+      success: (res) => {
+        console.log('购物车数据:', res);
+        this.setData({ loading: false });
+        if (res.data && res.data.code === 200) {
+          // 处理购物车数据
+          const cartItems = res.data.data || [];
+          const formattedCartItems = cartItems.map(item => {
+            // 计算小计
+            const subtotal = (item.price * item.quantity).toFixed(2);
+            
+            // 处理商品图片
+            let imageUrl = '/components/IMAGES/default.png'; // 默认图片
+            if (item.supplies && item.supplies.imageUrl) {
+              imageUrl = item.supplies.imageUrl.includes('http') ? 
+                item.supplies.imageUrl : 
+                getApp().globalData.NodeUrl + item.supplies.imageUrl;
+            }
+            
+            // 商品信息
+            const productName = item.supplies?.productName || '未知商品';
+            const brand = item.supplies?.brand || '未知品牌';
+            const category = item.supplies?.category || '未分类';
+            
+            return {
+              ...item,
+              imageUrl,
+              productName,
+              brand,
+              category,
+              subtotal
+            };
+          });
+          
+          // 计算总价
+          const total = formattedCartItems.reduce((sum, item) => {
+            return sum + parseFloat(item.subtotal);
+          }, 0).toFixed(2);
+          
+          this.setData({ 
+            cartList: formattedCartItems,
+            cartTotal: total
+          });
+        } else {
+          this.setData({ error: true, cartList: [] });
+          wx.showToast({ title: res.data?.message || '获取购物车失败', icon: 'none' });
+        }
+      },
+      fail: () => {
+        this.setData({ loading: false, error: true, cartList: [] });
+        wx.showToast({ title: '网络请求失败', icon: 'none' });
+      }
+    });
+  },
+
+  // 更新购物车商品数量
+  updateCartItemQuantity: function(e) {
+    const id = e.currentTarget.dataset.id;
+    const quantity = e.detail.value;
+    
+    if (quantity < 1) {
+      wx.showToast({ title: '数量不能小于1', icon: 'none' });
+      return;
+    }
+    
+    wx.request({
+      url: getApp().globalData.MyUrl + '/supplies/updateQuantity',
+      method: 'POST',
+      header: {
+        'content-type': 'application/json',
+        'token': app.globalData.token
+      },
+      data: {
+        id: id,
+        quantity: quantity
+      },
+      success: (res) => {
+        if (res.data && res.data.code === 200) {
+          // 更新本地数据
+          const cartList = this.data.cartList.map(item => {
+            if (item.id === id) {
+              const subtotal = (item.price * quantity).toFixed(2);
+              return { ...item, quantity, subtotal };
+            }
+            return item;
+          });
+          
+          // 重新计算总价
+          const total = cartList.reduce((sum, item) => {
+            return sum + parseFloat(item.subtotal);
+          }, 0).toFixed(2);
+          
+          this.setData({ 
+            cartList: cartList,
+            cartTotal: total
+          });
+          
+          wx.showToast({ title: '更新成功', icon: 'success' });
+        } else {
+          wx.showToast({ title: res.data?.message || '更新失败', icon: 'none' });
+        }
+      },
+      fail: () => {
+        wx.showToast({ title: '网络错误', icon: 'none' });
+      }
+    });
+  },
+
+  // 从购物车删除商品
+  removeCartItem: function(e) {
+    const id = e.currentTarget.dataset.id;
+    
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要从购物车中删除该商品吗？',
+      success: (res) => {
+        if (res.confirm) {
+          wx.request({
+            url: getApp().globalData.MyUrl + `/supplies/remove/${id}`,
+            method: 'DELETE',
+            header: {
+              'token': getApp().globalData.token
+            },
+            success: (res) => {
+              if (res.data && res.data.code === 200) {
+                // 更新本地数据
+                const cartList = this.data.cartList.filter(item => item.id !== id);
+                
+                // 重新计算总价
+                const total = cartList.reduce((sum, item) => {
+                  return sum + parseFloat(item.subtotal);
+                }, 0).toFixed(2);
+                
+                this.setData({ 
+                  cartList: cartList,
+                  cartTotal: total
+                });
+                
+                wx.showToast({ title: '删除成功', icon: 'success' });
+              } else {
+                wx.showToast({ title: res.data?.message || '删除失败', icon: 'none' });
+              }
+            },
+            fail: () => {
+              wx.showToast({ title: '网络错误', icon: 'none' });
+            }
+          });
+        }
+      }
+    });
+  },
+
+  // 清空购物车
+  clearCart: function() {
+    const userId = app.globalData.userId;
+    
+    if (!userId) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return;
+    }
+    
+    wx.showModal({
+      title: '确认清空',
+      content: '确定要清空购物车吗？',
+      success: (res) => {
+        if (res.confirm) {
+          wx.request({
+            url: getApp().globalData.MyUrl + '/supplies/clear',
+            method: 'DELETE',
+            header: {
+              'token': getApp().globalData.token
+            },
+            data: {
+              userId: userId
+            },
+            success: (res) => {
+              if (res.data && res.data.code === 200) {
+                this.setData({ 
+                  cartList: [],
+                  cartTotal: 0
+                });
+                wx.showToast({ title: '购物车已清空', icon: 'success' });
+              } else {
+                wx.showToast({ title: res.data?.message || '清空失败', icon: 'none' });
+              }
+            },
+            fail: () => {
+              wx.showToast({ title: '网络错误', icon: 'none' });
+            }
+          });
+        }
       }
     });
   },
@@ -379,6 +598,9 @@ Page({
     }
     if (nav === 'myLike') {
       this.loadUserLikes();
+    }
+    if (nav === 'myCart') {
+      this.loadUserCart();
     }
   },
 

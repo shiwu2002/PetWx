@@ -16,7 +16,11 @@ Page({
     pages: 0,
     hasMore: true,
     likeStates: {}, // 存储点赞状态
-    likeCounts: {} // 存储点赞数
+    likeCounts: {}, // 存储点赞数
+    // 购物车相关
+    showCartPopup: false,
+    selectedSupply: null,
+    cartNum: 1
   },
 
   /**
@@ -186,6 +190,94 @@ Page({
     console.log(id)
     wx.navigateTo({
       url: `/pages/SuppliesDetail/SuppliesDetail?id=${id}`
+    });
+  },
+
+  // ==================== 购物车功能 ====================
+  // 显示加入购物车弹窗
+  showAddToCartPopup(e) {
+    const supply = e.currentTarget.dataset.supply;
+    this.setData({
+      showCartPopup: true,
+      selectedSupply: supply,
+      cartNum: 1
+    });
+  },
+
+  // 关闭购物车弹窗
+  onCloseCartPopup() {
+    this.setData({
+      showCartPopup: false,
+      selectedSupply: null,
+      cartNum: 1
+    });
+  },
+
+  // 购物车数量输入
+  onCartNumInput(e) {
+    let value = parseInt(e.detail.value) || 1;
+    const { selectedSupply } = this.data;
+    
+    if (value < 1) value = 1;
+    if (selectedSupply && value > selectedSupply.stockQuantity) {
+      value = selectedSupply.stockQuantity;
+      wx.showToast({
+        title: `库存不足，最多${value}件`,
+        icon: 'none'
+      });
+    }
+    
+    this.setData({ cartNum: value });
+  },
+
+  // 确认加入购物车
+  onConfirmAddToCart() {
+    const { cartNum, selectedSupply } = this.data;
+    const userId = app.globalData.userId;
+    
+    if (!userId) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      });
+      this.setData({ showCartPopup: false });
+      return;
+    }
+    
+    if (!selectedSupply) {
+      wx.showToast({
+        title: '商品信息异常',
+        icon: 'none'
+      });
+      this.setData({ showCartPopup: false });
+      return;
+    }
+    
+    wx.request({
+      url: getApp().globalData.MyUrl + '/supplies/add',
+      method: 'POST',
+      header: {
+        'content-type': 'application/json',
+        'token': app.globalData.token
+      },
+      data: {
+        userId: userId,
+        suppliesId: selectedSupply.id,
+        quantity: cartNum,
+        price: selectedSupply.price
+      },
+      success: (res) => {
+        this.setData({ showCartPopup: false });
+        if (res.data && res.data.code === 200) {
+          wx.showToast({ title: '已加入购物车', icon: 'success' });
+        } else {
+          wx.showToast({ title: res.data.message || '加入购物车失败', icon: 'none' });
+        }
+      },
+      fail: () => {
+        this.setData({ showCartPopup: false });
+        wx.showToast({ title: '网络错误', icon: 'none' });
+      }
     });
   },
 

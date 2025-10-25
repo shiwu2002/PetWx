@@ -138,7 +138,7 @@ Page({
   },
   // 启动定时检查客服在线状态
   startOnlineCheck() {
-    // 每30秒检查一次客服在线状态
+    // 每1秒检查一次客服在线状态
     this.onlineCheckInterval = setInterval(async () => {
       const online = await checkKefuOnline();
       const prevOnlineStatus = this.data.isOnline;
@@ -148,7 +148,7 @@ Page({
       if (online && !prevOnlineStatus) {
         console.log('客服上线，WebSocket连接已恢复');
       }
-    }, 30000); // 30秒检查一次
+    }, 1000); // 1秒检查一次
   },
   // 更新消息状态
   updateMessageStatus(msg) {

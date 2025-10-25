@@ -18,6 +18,9 @@ Page({
     replyContent: '',
     showReplyId: null,
     userId: null,
+    // 购物车相关数据
+    showCartPopup: false,
+    cartNum: 1
   },
   onLoad(options) {
     const id = options.id;
@@ -486,5 +489,74 @@ Page({
   // 阻止事件冒泡
   stopPropagation() {
     // 空函数，用于阻止事件冒泡
+  },
+  
+  // ==================== 购物车功能 ====================
+  // 加入购物车按钮
+  onAddToCart() {
+    this.setData({ showCartPopup: true, cartNum: 1 });
+  },
+  
+  // 关闭购物车弹窗
+  onCloseCartPopup() {
+    this.setData({ showCartPopup: false });
+  },
+  
+  // 购物车数量输入
+  onCartNumInput(e) {
+    let value = parseInt(e.detail.value) || 1;
+    if (value < 1) value = 1;
+    if (value > this.data.supply.stockQuantity) value = this.data.supply.stockQuantity;
+    this.setData({ cartNum: value });
+  },
+  
+  // 确认加入购物车
+  onConfirmAddToCart() {
+    const { cartNum, supply, userId } = this.data;
+    
+    if (!userId) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      });
+      this.setData({ showCartPopup: false });
+      return;
+    }
+    
+    if (!supply) {
+      wx.showToast({
+        title: '商品信息异常',
+        icon: 'none'
+      });
+      this.setData({ showCartPopup: false });
+      return;
+    }
+    
+    wx.request({
+      url: getApp().globalData.MyUrl + '/supplies/add',
+      method: 'POST',
+      header: {
+        'content-type': 'application/json',
+        'token': app.globalData.token
+      },
+      data: {
+        userId: userId,
+        suppliesId: supply.id,
+        quantity: cartNum,
+        price: supply.price
+      },
+      success: (res) => {
+        this.setData({ showCartPopup: false });
+        if (res.data && res.data.code === 200) {
+          wx.showToast({ title: '已加入购物车', icon: 'success' });
+        } else {
+          wx.showToast({ title: res.data.message || '加入购物车失败', icon: 'none' });
+        }
+      },
+      fail: () => {
+        this.setData({ showCartPopup: false });
+        wx.showToast({ title: '网络错误', icon: 'none' });
+      }
+    });
   }
-}); 
+});
