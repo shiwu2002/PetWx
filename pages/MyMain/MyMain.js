@@ -206,18 +206,50 @@ Page({
   // 更新购物车商品数量
   updateCartItemQuantity: function(e) {
     const id = e.currentTarget.dataset.id;
-    const quantity = e.detail.value;
+    const action = e.currentTarget.dataset.action; // 获取操作类型（plus或minus）
+    let quantity;
     
-    if (quantity < 1) {
-      wx.showToast({ title: '数量不能小于1', icon: 'none' });
-      return;
+    // 判断是按钮点击还是输入框变化
+    if (action) {
+      // 按钮点击
+      // 先获取当前商品的数量
+      const currentItem = this.data.cartList.find(item => item.id === id);
+      if (!currentItem) return;
+      
+      // 根据操作类型增加或减少数量
+      if (action === 'plus') {
+        quantity = currentItem.quantity + 1;
+      } else if (action === 'minus') {
+        quantity = currentItem.quantity - 1;
+        if (quantity < 1) {
+          wx.showToast({ title: '数量不能小于1', icon: 'none' });
+          return;
+        }
+      }
+    } else {
+      // 输入框变化
+      quantity = parseInt(e.detail.value);
+      if (isNaN(quantity) || quantity < 1) {
+        wx.showToast({ title: '请输入有效的数量', icon: 'none' });
+        // 恢复原来的值
+        const currentItem = this.data.cartList.find(item => item.id === id);
+        if (currentItem) {
+          this.setData({
+            [`cartList[${this.data.cartList.findIndex(item => item.id === id)}].quantity`]: currentItem.quantity
+          });
+        }
+        return;
+      }
     }
+    
+    console.log("id:" + id);
+    console.log("quantity:" + quantity);
     
     wx.request({
       url: getApp().globalData.MyUrl + '/supplies/updateQuantity',
       method: 'POST',
       header: {
-        'content-type': 'application/json',
+        'content-type': 'application/x-www-form-urlencoded;charset=UTF-8',
         'token': app.globalData.token
       },
       data: {
@@ -315,13 +347,10 @@ Page({
       success: (res) => {
         if (res.confirm) {
           wx.request({
-            url: getApp().globalData.MyUrl + '/supplies/clear',
-            method: 'DELETE',
+            url: getApp().globalData.MyUrl + `/supplies/clear/${userId}`,
+            method: 'GET',
             header: {
               'token': getApp().globalData.token
-            },
-            data: {
-              userId: userId
             },
             success: (res) => {
               if (res.data && res.data.code === 200) {
